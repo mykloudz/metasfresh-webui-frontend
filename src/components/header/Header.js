@@ -443,9 +443,6 @@ class Header extends Component {
                       widgetData={[docStatusData]}
                       noLabel
                       type="primary"
-                      onDropdownOpen={() => {
-                        this.handleCloseOverlays('dropdown');
-                      }}
                       {...docStatus}
                     />
                     {tooltipOpen === keymap.DOC_STATUS && (
