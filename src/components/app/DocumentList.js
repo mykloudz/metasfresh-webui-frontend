@@ -713,7 +713,7 @@ class DocumentList extends Component {
     const {
       windowType,
       open,
-      closeOverlays,
+      onCloseOverlays,
       parentDefaultViewId,
       inBackground,
       fetchQuickActionsOnInit,
@@ -893,7 +893,7 @@ class DocumentList extends Component {
               onDoubleClick={id => !isIncluded && this.redirectToDocument(id)}
               size={data.size}
               pageLength={this.pageLength}
-              handleChangePage={this.handleChangePage}
+              onChangePage={this.handleChangePage}
               onSelectionChanged={updateParentSelectedIds}
               mainTable={true}
               updateDocList={this.fetchLayoutAndData}
@@ -916,7 +916,7 @@ class DocumentList extends Component {
                 autofocus,
                 open,
                 page,
-                closeOverlays,
+                onCloseOverlays,
                 inBackground,
                 disablePaginationShortcuts,
                 isModal,
