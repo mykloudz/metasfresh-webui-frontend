@@ -134,15 +134,6 @@ class TableItem extends PureComponent {
     changeListenOnFalse();
   };
 
-  closeTableField = e => {
-    const { activeCell } = this.state;
-
-    this.handleEditProperty(e);
-    this.listenOnKeysTrue();
-
-    activeCell && activeCell.focus();
-  };
-
   isAllowedFieldEdit = item => {
     return item.viewEditorRenderMode === VIEW_EDITOR_RENDER_MODES_ON_DEMAND;
   };
@@ -245,7 +236,6 @@ class TableItem extends PureComponent {
                 onKeyDown={e => this.handleKeyDown(e, property, widgetData[0])}
                 listenOnKeysTrue={this.listenOnKeysTrue}
                 listenOnKeysFalse={this.listenOnKeysFalse}
-                closeTableField={e => this.closeTableField(e)}
                 onRightClick={e =>
                   onRightClick(e, property, supportZoomInto, supportFieldEdit)
                 }

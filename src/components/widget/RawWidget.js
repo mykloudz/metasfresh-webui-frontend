@@ -254,7 +254,6 @@ class RawWidget extends Component {
       data,
       listenOnKeys,
       listenOnKeysFalse,
-      closeTableField,
       onZoomInto,
       attribute,
       allowShowPassword,
@@ -488,7 +487,6 @@ class RawWidget extends Component {
             newRecordWindowId={fields[0].newRecordWindowId}
             listenOnKeys={listenOnKeys}
             listenOnKeysFalse={listenOnKeysFalse}
-            closeTableField={closeTableField}
             onFocus={this.focus}
             onBlur={this.handleBlur}
             onChange={this.handlePatch}
@@ -1006,7 +1004,6 @@ RawWidget.propTypes = {
   icon: PropTypes.string,
   entity: PropTypes.string,
   data: PropTypes.any,
-  closeTableField: PropTypes.func,
   attribute: PropTypes.bool,
   allowShowPassword: PropTypes.bool, // NOTE: looks like this wasn't used
   buttonProcessId: PropTypes.string, // NOTE: looks like this wasn't used

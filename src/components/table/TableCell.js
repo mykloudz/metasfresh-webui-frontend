@@ -151,7 +151,6 @@ class TableCell extends PureComponent {
       listenOnKeys,
       listenOnKeysFalse,
       listenOnKeysTrue,
-      closeTableField,
       getSizeClass,
       onRightClick,
       mainTable,
@@ -217,7 +216,6 @@ class TableCell extends PureComponent {
             listenOnKeysTrue={listenOnKeysTrue}
             listenOnKeysFalse={listenOnKeysFalse}
             onChange={mainTable ? onCellChange : null}
-            closeTableField={closeTableField}
             isOpenDatePicker={isOpenDatePicker}
             ref={c => {
               this.widget = c && c.getWrappedInstance();
