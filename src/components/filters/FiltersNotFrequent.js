@@ -31,6 +31,14 @@ class FiltersNotFrequent extends Component {
     }
   };
 
+  handleShow = () => this.props.onShow(true);
+
+  handleHide = () => this.props.onShow(false);
+
+  handleReturnBackToDropdown = () => this.toggleFilter(null);
+
+  handleCloseFilterMenu = () => this.toggleDropdown(false);
+
   toggleDropdown = value => {
     this.setState({
       isOpenDropdown: value,
@@ -49,7 +57,6 @@ class FiltersNotFrequent extends Component {
       windowType,
       notValidFields,
       viewId,
-      onShow,
       applyFilters,
       clearFilters,
       active,
@@ -110,15 +117,15 @@ class FiltersNotFrequent extends Component {
                 captionValue={activeFilter.captionValue}
                 windowType={windowType}
                 data={activeFilter.isActive ? activeFilter : openFilter}
-                closeFilterMenu={() => this.toggleDropdown(false)}
-                returnBackToDropdown={() => this.toggleFilter(null)}
+                closeFilterMenu={this.handleCloseFilterMenu}
+                returnBackToDropdown={this.handleReturnBackToDropdown}
                 clearFilters={clearFilters}
                 applyFilters={applyFilters}
                 notValidFields={notValidFields}
                 isActive={activeFilter.isActive}
                 active={active}
-                onShow={() => onShow(true)}
-                onHide={() => onShow(false)}
+                onShow={this.handleShow}
+                onHide={this.handleHide}
                 viewId={viewId}
                 outsideClick={this.outsideClick}
               />

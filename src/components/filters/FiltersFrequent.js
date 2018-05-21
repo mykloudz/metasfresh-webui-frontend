@@ -34,9 +34,15 @@ class FiltersFrequent extends PureComponent {
     return active ? active.find(item => item.filterId === id) : null;
   };
 
+  handleShow = () => this.props.onShow(true);
+
+  handleHide = () => this.props.onShow(false);
+
   handleClickOutside = () => {
     this.outsideClick();
   };
+
+  handleCloseFilterMenu = () => this.toggleFilter(null);
 
   outsideClick = () => {
     const { widgetShown, dropdownToggled, allowOutsideClick } = this.props;
@@ -52,7 +58,6 @@ class FiltersFrequent extends PureComponent {
       windowType,
       notValidFields,
       viewId,
-      onShow,
       applyFilters,
       clearFilters,
       active,
@@ -126,14 +131,14 @@ class FiltersFrequent extends PureComponent {
                   key={index}
                   windowType={windowType}
                   data={item}
-                  closeFilterMenu={() => this.toggleFilter()}
+                  closeFilterMenu={this.handleCloseFilterMenu}
                   clearFilters={clearFilters}
                   applyFilters={applyFilters}
                   notValidFields={notValidFields}
                   isActive={item.isActive}
                   active={active}
-                  onShow={() => onShow(true)}
-                  onHide={() => onShow(false)}
+                  onShow={this.handleShow}
+                  onHide={this.handleHide}
                   viewId={viewId}
                   outsideClick={this.outsideClick}
                 />
