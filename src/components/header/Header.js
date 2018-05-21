@@ -585,7 +585,6 @@ class Header extends Component {
           isSideListShow && (
             <SideList
               windowType={windowType ? windowType : ''}
-              onCloseOverlays={this.handleCloseOverlays}
               onClose={this.handleSidelistToggle}
               isSideListShow={isSideListShow}
               disableOnClickOutside={!showSidelist}

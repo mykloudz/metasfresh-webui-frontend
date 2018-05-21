@@ -36,7 +36,6 @@ class SideList extends Component {
     const {
       windowType,
       onCloseOverlays,
-      onClose,
       isSideListShow,
       docId,
       pagination,
@@ -66,7 +65,6 @@ class SideList extends Component {
             selected={[docId]}
             disconnectFromState={true}
             autofocus={true}
-            onCloseSideList={onClose}
             onCloseOverlays={onCloseOverlays}
             {...{
               windowType,
