@@ -11,7 +11,6 @@ import {
   flattenLastElem,
   getRootBreadcrumb,
   getWindowBreadcrumb,
-  pathRequest,
   queryPathsRequest,
 } from '../../actions/MenuActions';
 import { clearMasterData, closeModal } from '../../actions/WindowActions';
@@ -119,28 +118,6 @@ class MenuOverlay extends Component {
 
   handleNewRedirect = elementId => this.handleRedirect(elementId, true);
 
-  handlePath = nodeId => {
-    pathRequest(nodeId).then(response => {
-      let pathArray = [];
-      let node = response.data;
-
-      do {
-        const children = node.children && node.children[0];
-        node.children = undefined;
-
-        pathArray.push(node);
-        node = children;
-      } while (node);
-
-      //remove first MENU element
-      pathArray.shift();
-
-      this.setState({
-        path: pathArray,
-      });
-    });
-  };
-
   renderPath = path => {
     return (
       <span>
@@ -214,7 +191,6 @@ class MenuOverlay extends Component {
                 onClickOnFolder={this.handleDeeper}
                 onRedirect={this.handleRedirect}
                 onNewRedirect={this.handleNewRedirect}
-                onPath={this.handlePath}
                 parent={node}
                 printChildren={true}
                 transparentBookmarks={true}
@@ -237,7 +213,6 @@ class MenuOverlay extends Component {
           onClickOnFolder={this.handleDeeper}
           onRedirect={this.handleRedirect}
           onNewRedirect={this.handleNewRedirect}
-          onPath={this.handlePath}
           parent={nodeData}
           printChildren={true}
           transparentBookmarks={true}
@@ -478,7 +453,6 @@ class MenuOverlay extends Component {
                       onClickOnFolder={this.handleDeeper}
                       onRedirect={this.handleRedirect}
                       onNewRedirect={this.handleNewRedirect}
-                      onPath={this.handlePath}
                       onMenuOverlay={onMenuOverlay}
                       openModal={openModal}
                       {...result}

@@ -24,7 +24,6 @@ class MenuOverlayContainer extends Component {
       onClickOnFolder,
       onRedirect,
       onNewRedirect,
-      onPath,
       printChildren,
       deep,
       back,
@@ -64,7 +63,6 @@ class MenuOverlayContainer extends Component {
             {...{
               showBookmarks,
               openModal,
-              onPath,
               back,
               type,
               caption,
@@ -108,7 +106,6 @@ class MenuOverlayContainer extends Component {
                     openModal,
                     back,
                     printChildren,
-                    onPath,
                     updateData,
                     transparentBookmarks,
                     onMenuOverlay,

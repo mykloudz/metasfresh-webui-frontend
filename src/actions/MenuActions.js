@@ -7,12 +7,6 @@ import * as types from '../constants/MenuTypes';
 let breadcrumbsRequested = false;
 let breadcrumbsId = null;
 
-export function pathRequest(nodeId) {
-  return axios.get(
-    config.API_URL + '/menu/' + nodeId + '/path/' + '&inclusive=true'
-  );
-}
-
 export function nodePathsRequest(nodeId, limit) {
   return axios.get(
     config.API_URL +
