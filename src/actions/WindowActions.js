@@ -195,12 +195,12 @@ export function sortTab(scope, tabId, field, asc) {
   };
 }
 
-export function updateRowStatus(scope, tabid, rowid, saveStatus) {
+export function updateRowStatus(scope, tabId, rowId, saveStatus) {
   return {
     type: UPDATE_ROW_STATUS,
     scope,
-    tabid,
-    rowid,
+    tabId,
+    rowId,
     saveStatus,
   };
 }
@@ -230,13 +230,13 @@ export function updateDataValidStatus(scope, validStatus) {
   };
 }
 
-export function updateRowProperty(property, item, tabid, rowid, scope) {
+export function updateRowProperty(property, item, tabId, rowId, scope) {
   return {
     type: UPDATE_ROW_PROPERTY,
     property,
     item,
-    tabid,
-    rowid,
+    tabId,
+    rowId,
     scope,
   };
 }
@@ -249,21 +249,21 @@ export function updateDataIncludedTabsInfo(scope, includedTabsInfo) {
   };
 }
 
-export function addNewRow(item, tabid, rowid, scope) {
+export function addNewRow(item, tabId, rowId, scope) {
   return {
     type: ADD_NEW_ROW,
     item: item,
-    tabid: tabid,
-    rowid: rowid,
+    tabId,
+    rowId,
     scope: scope,
   };
 }
 
-export function deleteRow(tabid, rowid, scope) {
+export function deleteRow(tabId, rowId, scope) {
   return {
     type: DELETE_ROW,
-    tabid: tabid,
-    rowid: rowid,
+    tabId,
+    rowId,
     scope: scope,
   };
 }
@@ -277,13 +277,13 @@ export function updateDataFieldProperty(property, item, scope) {
   };
 }
 
-export function updateRowFieldProperty(property, item, tabid, rowid, scope) {
+export function updateRowFieldProperty(property, item, tabId, rowId, scope) {
   return {
     type: UPDATE_ROW_FIELD_PROPERTY,
     property: property,
     item: item,
-    tabid: tabid,
-    rowid: rowid,
+    tabId,
+    rowId,
     scope: scope,
   };
 }
@@ -322,8 +322,8 @@ export function openModal(
     type: OPEN_MODAL,
     windowType: windowType,
     modalType: type,
-    tabId: tabId,
-    rowId: rowId,
+    tabId,
+    rowId,
     viewId: viewId,
     dataId: dataId,
     title: title,
@@ -475,11 +475,11 @@ function initTabs(layout, windowType, docId, isModal) {
 
     layout &&
       layout.map((tab, index) => {
-        tabTmp[tab.tabid] = {};
+        tabTmp[tab.tabId] = {};
 
         if (index === 0 || !tab.queryOnActivate) {
-          getTab(tab.tabid, windowType, docId).then(res => {
-            tabTmp[tab.tabid] = res;
+          getTab(tab.tabId, windowType, docId).then(res => {
+            tabTmp[tab.tabId] = res;
             dispatch(addRowData(tabTmp, getScope(isModal)));
           });
         }
@@ -685,14 +685,14 @@ function updateRow(row, scope) {
             updateRowFieldProperty(
               fieldName,
               row.fieldsByName[fieldName],
-              row.tabid,
+              row.tabId,
               row.rowId,
               scope
             )
           );
         });
       } else {
-        dispatch(updateRowProperty(key, row[key], row.tabid, row.rowId, scope));
+        dispatch(updateRowProperty(key, row[key], row.tabId, row.rowId, scope));
       }
     });
   };
@@ -711,7 +711,7 @@ function mapDataToState(data, isModal, rowId, id, windowType, isAdvanced) {
       // First item in response is direct one for action that called it.
       if (index === 0 && rowId === 'NEW') {
         dispatch(
-          addNewRow(parsedItem, parsedItem.tabid, parsedItem.rowId, 'master')
+          addNewRow(parsedItem, parsedItem.tabId, parsedItem.rowId, 'master')
         );
       } else {
         if (item.rowId && !isModal) {
@@ -736,7 +736,7 @@ function updateStatus(responseData) {
     const updateDispatch = item => {
       if (item.rowId) {
         dispatch(
-          updateRowStatus('master', item.tabid, item.rowId, item.saveStatus)
+          updateRowStatus('master', item.tabId, item.rowId, item.saveStatus)
         );
       } else {
         item.validStatus &&
@@ -762,11 +762,11 @@ function updateStatus(responseData) {
  * It updates store for single field value modification, like handleChange
  * in MasterWidget
  */
-export function updatePropertyValue(property, value, tabid, rowid, isModal) {
+export function updatePropertyValue(property, value, tabId, rowId, isModal) {
   return dispatch => {
-    if (tabid && rowid) {
+    if (tabId && rowId) {
       dispatch(
-        updateRowFieldProperty(property, { value }, tabid, rowid, 'master')
+        updateRowFieldProperty(property, { value }, tabId, rowId, 'master')
       );
       if (isModal) {
         dispatch(updateDataFieldProperty(property, { value }, 'modal'));
@@ -1027,10 +1027,10 @@ export function handleProcessResponse(response, type, id) {
   };
 }
 
-export function deleteLocal(tabid, rowsid, scope, response) {
+export function deleteLocal(tabId, rowIds, scope, response) {
   return dispatch => {
-    for (let rowid of rowsid) {
-      dispatch(deleteRow(tabid, rowid, scope));
+    for (let rowId of rowIds) {
+      dispatch(deleteRow(tabId, rowId, scope));
     }
     dispatch(updateStatus(response.data));
   };

@@ -78,14 +78,14 @@ class Tabs extends Component {
       });
 
       if (selected == item.key) {
-        const { tabid, queryOnActivate, docId, orderBy } = item.props;
+        const { tabId, queryOnActivate, docId, orderBy } = item.props;
 
         return (
           <div key={'pane' + item.key} className="tab-pane active">
             <Tab
               {...{
                 queryOnActivate,
-                tabid,
+                tabId,
                 docId,
                 windowType,
                 orderBy,

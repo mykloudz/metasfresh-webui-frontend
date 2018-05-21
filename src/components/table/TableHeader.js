@@ -32,7 +32,7 @@ class TableHeader extends PureComponent {
     if (!sortable) {
       return;
     }
-    const { sort, onDeselect, page, tabid } = this.props;
+    const { sort, onDeselect, page, tabId } = this.props;
     const stateFields = this.state.fields;
     let fields = {};
     let sortingValue = null;
@@ -53,7 +53,7 @@ class TableHeader extends PureComponent {
       fields: { ...fields },
     });
 
-    sort(sortingValue, field, true, page, tabid);
+    sort(sortingValue, field, true, page, tabId);
     onDeselect();
   };
 

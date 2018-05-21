@@ -259,7 +259,7 @@ export default function windowHandler(state = initialState, action) {
       };
     case ADD_NEW_ROW:
       const newRowData = state[action.scope].rowData.update(
-        `${action.tabid}`,
+        `${action.tabId}`,
         list => list.push(action.item)
       );
 
@@ -272,8 +272,8 @@ export default function windowHandler(state = initialState, action) {
       };
     case DELETE_ROW:
       const deletedRowData = state[action.scope].rowData.update(
-        `${action.tabid}`,
-        list => list.filter(item => item.rowId !== action.rowid)
+        `${action.tabId}`,
+        list => list.filter(item => item.rowId !== action.rowId)
       );
 
       return {
@@ -323,17 +323,17 @@ export default function windowHandler(state = initialState, action) {
       });
     }
     case UPDATE_ROW_FIELD_PROPERTY: {
-      const { scope, tabid, rowid, property } = action;
+      const { scope, tabId, rowId, property } = action;
       const scState = state[scope];
-      const scRowData = scState.rowData.get(`${tabid}`);
+      const scRowData = scState.rowData.get(`${tabId}`);
 
       if (scState && scState.rowData && scRowData) {
         const updateRowFieldProperty = state[action.scope].rowData.update(
-          `${tabid}`,
+          `${tabId}`,
           list =>
             list.map(
               item =>
-                item.rowId === rowid
+                item.rowId === rowId
                   ? {
                       ...item,
                       fieldsByName: {
@@ -361,11 +361,11 @@ export default function windowHandler(state = initialState, action) {
     }
     case UPDATE_ROW_PROPERTY:
       const updateRowPropertyData = state[action.scope].rowData.update(
-        `${action.tabid}`,
+        `${action.tabId}`,
         list =>
           list.map(
             item =>
-              item.rowId === action.rowid
+              item.rowId === action.rowId
                 ? {
                     ...item,
                     [action.property]: action.item,
@@ -383,11 +383,11 @@ export default function windowHandler(state = initialState, action) {
       };
     case UPDATE_ROW_STATUS:
       const updateRowStatusData = state[action.scope].rowData.update(
-        `${action.tabid}`,
+        `${action.tabId}`,
         list =>
           list.map(
             item =>
-              item.rowId !== action.rowid
+              item.rowId !== action.rowId
                 ? {
                     ...item,
                     saveStatus: action.saveStatus,

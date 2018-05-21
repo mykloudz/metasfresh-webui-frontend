@@ -882,7 +882,7 @@ class DocumentList extends Component {
               cols={layout.elements}
               collapsible={layout.collapsible}
               expandedDepth={layout.expandedDepth}
-              tabid={1}
+              tabId={1}
               type={windowType}
               emptyText={layout.emptyResultText}
               emptyHint={layout.emptyResultHint}

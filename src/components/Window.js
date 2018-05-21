@@ -57,7 +57,7 @@ class Window extends PureComponent {
       >
         {tabs.map(elem => {
           const {
-            tabid,
+            tabId,
             caption,
             elements,
             emptyResultText,
@@ -71,10 +71,10 @@ class Window extends PureComponent {
               entity="window"
               caption={caption}
               keyProperty="rowId"
-              key={tabid}
+              key={tabId}
               rowData={rowData}
               cols={elements}
-              tabid={tabid}
+              tabId={tabId}
               type={type}
               sort={sort}
               orderBy={defaultOrderBys}
@@ -85,7 +85,7 @@ class Window extends PureComponent {
               tabIndex={this.tabIndex.tabs}
               queryOnActivate={queryOnActivate}
               supportQuickInput={supportQuickInput}
-              tabInfo={tabsInfo && tabsInfo[tabid]}
+              tabInfo={tabsInfo && tabsInfo[tabId]}
               disconnectFromState={true}
             />
           );

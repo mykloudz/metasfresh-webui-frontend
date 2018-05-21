@@ -35,8 +35,8 @@ export function getAttributesInstance(
     source: {
       [type]: docType,
       documentId: docId,
-      tabid: tabId,
-      rowId: rowId,
+      tabId,
+      rowId,
       fieldName: fieldName,
     },
   });
