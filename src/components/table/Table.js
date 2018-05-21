@@ -1169,7 +1169,6 @@ class Table extends Component {
               }}
               blur={() => this.closeContextMenu()}
               tabId={tabid}
-              onDeselect={() => this.deselectAllProducts()}
               onFieldEdit={() => {
                 if (contextMenu.supportFieldEdit && selected.length === 1) {
                   this.handleFieldEdit(selected, contextMenu.fieldName);
@@ -1280,7 +1279,6 @@ class Table extends Component {
               rowLength={rows ? rows.length : 0}
               onSelectAll={this.selectAll}
               onSelectRange={this.selectRangeProduct}
-              onDeselect={this.deselectAllProducts}
             />
           </div>
         )}
