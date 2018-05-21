@@ -84,6 +84,8 @@ class Breadcrumb extends Component {
     this.toggleTooltip(false);
   };
 
+  handleClickOutside = event => this.props.onMenuOverlay(event, '');
+
   renderBtn = (menu, index) => {
     const {
       onMenuOverlay,
@@ -134,7 +136,7 @@ class Breadcrumb extends Component {
               }}
               nodeId={menu.nodeId}
               node={menu}
-              onClickOutside={e => onMenuOverlay(e, '')}
+              onClickOutside={this.handleClickOutside}
               disableOnClickOutside={menuOverlay !== menu.nodeId}
             />
           )}

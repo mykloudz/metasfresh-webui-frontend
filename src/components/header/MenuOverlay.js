@@ -50,7 +50,7 @@ class MenuOverlay extends Component {
     }
   };
 
-  handleClickOutside = e => this.props.onClickOutside(e);
+  handleClickOutside = this.props.onClickOutside;
 
   handleQuery = e => {
     e.preventDefault();
