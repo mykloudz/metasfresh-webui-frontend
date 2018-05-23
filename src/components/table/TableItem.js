@@ -72,6 +72,13 @@ class TableItem extends PureComponent {
     this.editProperty(e, property, callback, item);
   };
 
+  handleClickOutside = event => {
+    const { changeListenOnTrue } = this.props;
+
+    this.handleEditProperty(event);
+    changeListenOnTrue();
+  };
+
   prepareWidgetData = item => {
     const { fieldsByName } = this.props;
     const widgetData = item.fields.map(prop => fieldsByName[prop.field]);
@@ -147,7 +154,6 @@ class TableItem extends PureComponent {
       readonly,
       mainTable,
       newRow,
-      changeListenOnTrue,
       tabIndex,
       entity,
       getSizeClass,
@@ -225,10 +231,7 @@ class TableItem extends PureComponent {
                 onDoubleClick={e =>
                   this.handleEditProperty(e, property, true, widgetData[0])
                 }
-                onClickOutside={e => {
-                  this.handleEditProperty(e);
-                  changeListenOnTrue();
-                }}
+                onClickOutside={this.handleClickOutside}
                 disableOnClickOutside={edited !== property}
                 onCellChange={onItemChange}
                 updatedRow={updatedRow || newRow}
@@ -279,10 +282,11 @@ class TableItem extends PureComponent {
     return res;
   };
 
-  handleIndentSelect = (e, id, elem) => {
-    const { onSelect } = this.props;
-    e.stopPropagation();
-    onSelect(this.nestedSelect(elem).concat([id]));
+  handleIndentSelect = event => {
+    const { rowId, includedDocuments, onSelect } = this.props;
+
+    event.stopPropagation();
+    onSelect(this.nestedSelect(includedDocuments).concat([rowId]));
   };
 
   getIconClassName = huType => {
@@ -308,7 +312,6 @@ class TableItem extends PureComponent {
       indent,
       lastChild,
       includedDocuments,
-      rowId,
       collapsed,
       onRowCollapse,
       collapsible,
@@ -361,10 +364,7 @@ class TableItem extends PureComponent {
         ) : (
           ''
         )}
-        <div
-          className="indent-icon"
-          onClick={e => this.handleIndentSelect(e, rowId, includedDocuments)}
-        >
+        <div className="indent-icon" onClick={this.handleIndentSelect}>
           <i className={this.getIconClassName(huType)} />
         </div>
       </div>
