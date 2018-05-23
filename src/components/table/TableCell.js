@@ -122,6 +122,21 @@ class TableCell extends PureComponent {
     }
   }
 
+  handleDoubleClick = event => {
+    const { item, isEdited, onDoubleClick } = this.props;
+
+    // TODO: Hack, Color fields should be readonly
+    const readonly = item.widgetType === 'Color' ? true : this.props.readonly;
+
+    if (isEdited) {
+      event.stopPropagation();
+    }
+
+    if (!readonly) {
+      onDoubleClick(event);
+    }
+  };
+
   handleBackdropLock = state => {
     this.setState(
       {
@@ -143,7 +158,6 @@ class TableCell extends PureComponent {
       type,
       rowId,
       tabId,
-      onDoubleClick,
       onKeyDown,
       updatedRow,
       tabIndex,
@@ -158,8 +172,6 @@ class TableCell extends PureComponent {
       viewId,
       modalVisible,
     } = this.props;
-    // TODO: Hack, Color fields should be readonly
-    const readonly = item.widgetType === 'Color' ? true : this.props.readonly;
     const docId = this.props.docId + '';
     const tdValue = !isEdited
       ? TableCell.fieldValueToString(
@@ -177,10 +189,7 @@ class TableCell extends PureComponent {
       <td
         tabIndex={modalVisible ? -1 : tabIndex}
         ref={c => (this.cell = c)}
-        onDoubleClick={e => {
-          if (isEdited) e.stopPropagation();
-          if (!readonly) onDoubleClick(e);
-        }}
+        onDoubleClick={this.handleDoubleClick}
         onKeyDown={onKeyDown}
         onContextMenu={onRightClick}
         className={classnames(
