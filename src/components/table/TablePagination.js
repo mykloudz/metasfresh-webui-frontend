@@ -73,6 +73,18 @@ class TablePagination extends PureComponent {
     );
   };
 
+  handleClickArrow = left => () => {
+    const { onChangePage } = this.props;
+
+    this.resetGoToPage();
+
+    onChangePage(left ? 'down' : 'up');
+  };
+
+  handleClickArrowLeft = this.handleClickArrow(true);
+
+  handleClickArrowRight = this.handleClickArrow(false);
+
   handleSelectWholePage = value => {
     this.setState({
       selectedWholePage: value,
@@ -96,7 +108,7 @@ class TablePagination extends PureComponent {
           ref={c => (this.goToPage = c)}
           max={pages}
           value={value}
-          onChange={e => this.handleValue(e)}
+          onChange={this.handleValue}
           onKeyDown={e => this.handleSubmit(e, value, pages)}
         />
       </div>
@@ -133,7 +145,7 @@ class TablePagination extends PureComponent {
           className={classnames('page-link', {
             'page-link-compressed': compressed,
           })}
-          onClick={() => this.handleFirstDotsState()}
+          onClick={this.handleFirstDotsState}
         >
           {'...'}
         </a>
@@ -152,7 +164,7 @@ class TablePagination extends PureComponent {
           className={classnames('page-link', {
             'page-link-compressed': compressed,
           })}
-          onClick={() => this.handleSecondDotsState()}
+          onClick={this.handleSecondDotsState}
         >
           {'...'}
         </a>
@@ -234,9 +246,7 @@ class TablePagination extends PureComponent {
         </div>
         <div
           className="pagination-link pointer"
-          onClick={() => {
-            this.handleSelectAll();
-          }}
+          onClick={this.handleSelectAll}
           title="Alt+A"
         >
           {selectedWholePage && isShowSelectAllItems
@@ -250,17 +260,17 @@ class TablePagination extends PureComponent {
   };
 
   renderArrow = left => {
-    const { compressed, onChangePage } = this.props;
+    const { compressed } = this.props;
+
     return (
       <li className="page-item">
         <a
           className={classnames('page-link', {
             'page-link-compressed': compressed,
           })}
-          onClick={() => {
-            this.resetGoToPage();
-            onChangePage(left ? 'down' : 'up');
-          }}
+          onClick={
+            left ? this.handleClickArrowLeft : this.handleClickArrowRight
+          }
         >
           <span>{left ? '«' : '»'}</span>
         </a>
@@ -268,23 +278,42 @@ class TablePagination extends PureComponent {
     );
   };
 
+  handleFirstPage = () => {
+    const { onChangePage } = this.props;
+
+    onChangePage(1);
+  };
+
+  handleLastPage = () => {
+    const { onChangePage, size, pageLength } = this.props;
+
+    onChangePage(size ? Math.ceil(size / pageLength) : 0);
+  };
+
+  handleNextPage = () => {
+    const { onChangePage } = this.props;
+
+    onChangePage('up');
+  };
+
+  handlePrevPage = () => {
+    const { onChangePage } = this.props;
+
+    onChangePage('down');
+  };
+
   paginationShortcuts = () => {
-    const {
-      size,
-      pageLength,
-      disablePaginationShortcuts,
-      onChangePage,
-    } = this.props;
+    const { size, pageLength, disablePaginationShortcuts } = this.props;
 
     const pages = size ? Math.ceil(size / pageLength) : 0;
 
     return (
       !disablePaginationShortcuts && {
-        onFirstPage: () => onChangePage(1),
-        onLastPage: () => onChangePage(size ? Math.ceil(size / pageLength) : 0),
-        onNextPage: () => onChangePage('up'),
-        onPrevPage: () => onChangePage('down'),
-        pages: pages,
+        onFirstPage: this.handleFirstPage,
+        onLastPage: this.handleLastPage,
+        onNextPage: this.handleNextPage,
+        onPrevPage: this.handlePrevPage,
+        pages,
       }
     );
   };
@@ -337,7 +366,7 @@ class TablePagination extends PureComponent {
         </div>
 
         <PaginationContextShortcuts
-          onSelectAll={() => this.handleSelectAll()}
+          onSelectAll={this.handleSelectAll}
           {...this.paginationShortcuts()}
         />
       </div>
