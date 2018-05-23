@@ -31,8 +31,8 @@ class AttributesDropdown extends Component {
     }, 10);
   };
 
-  handlePatch = (prop, value, attrId) => {
-    const { onPatch } = this.props;
+  handlePatch = (prop, value) => {
+    const { onPatch, attrId } = this.props;
     const { patchCallbacks } = this.state;
     const updatedCallbacks = patchCallbacks.set(attrId, true);
 
@@ -79,7 +79,7 @@ class AttributesDropdown extends Component {
             key={idx}
             type={item.type}
             caption={item.caption}
-            onPatch={(prop, value) => this.handlePatch(prop, value, attrId)}
+            onPatch={this.handlePatch}
             onChange={onChange}
             disableOnClickOutside={disableOnClickOutside}
             enableOnClickOutside={enableOnClickOutside}
