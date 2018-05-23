@@ -150,6 +150,12 @@ class RawWidget extends Component {
     });
   };
 
+  handleZoomInto = () => {
+    const { onZoomInto, fields } = this.props;
+
+    onZoomInto(fields[0].field);
+  };
+
   willPatch = (value, valueTo) => {
     const { widgetData } = this.props;
     const { cachedValue } = this.state;
@@ -254,7 +260,6 @@ class RawWidget extends Component {
       data,
       listenOnKeys,
       listenOnKeysFalse,
-      onZoomInto,
       attribute,
       allowShowPassword,
       onBlurWidget,
@@ -782,7 +787,7 @@ class RawWidget extends Component {
               (gridAlign ? 'text-xs-' + gridAlign + ' ' : '') +
               (readonly ? 'tag-disabled disabled ' : '')
             }
-            onClick={() => onZoomInto(fields[0].field)}
+            onClick={this.handleZoomInto}
             tabIndex={tabIndex}
             ref={c => (this.rawWidget = c)}
           >
@@ -834,7 +839,6 @@ class RawWidget extends Component {
       isModal,
       onPatch,
       widgetType,
-      onZoomInto,
     } = this.props;
 
     const { errorPopup, clearedFieldWarning, tooltipToggled } = this.state;
@@ -891,10 +895,7 @@ class RawWidget extends Component {
               title={caption}
             >
               {fields[0].supportZoomInto ? (
-                <span
-                  className="zoom-into"
-                  onClick={() => onZoomInto(fields[0].field)}
-                >
+                <span className="zoom-into" onClick={this.handleZoomInto}>
                   {caption}
                 </span>
               ) : (
