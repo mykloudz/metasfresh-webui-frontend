@@ -94,6 +94,13 @@ class TableContextMenu extends Component {
     );
   };
 
+  handleZoomInto = () => {
+    const { onZoomInto } = this.props;
+    const { contextMenu } = this.state;
+
+    onZoomInto(contextMenu.fieldName);
+  };
+
   render() {
     const {
       blur,
@@ -103,7 +110,6 @@ class TableContextMenu extends Component {
       onOpenNewTab,
       onDelete,
       onFieldEdit,
-      onZoomInto,
     } = this.props;
 
     const { contextMenu, references } = this.state;
@@ -131,10 +137,7 @@ class TableContextMenu extends Component {
         onBlur={blur}
       >
         {contextMenu.supportZoomInto && (
-          <div
-            className="context-menu-item"
-            onClick={() => onZoomInto(contextMenu.fieldName)}
-          >
+          <div className="context-menu-item" onClick={this.handleZoomInto}>
             <i className="meta-icon-share" />
             {` ${counterpart.translate('window.table.zoomInto')}`}
           </div>
