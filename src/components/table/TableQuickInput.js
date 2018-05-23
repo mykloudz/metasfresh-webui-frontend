@@ -104,6 +104,14 @@ class TableQuickInput extends Component {
     );
   };
 
+  setRefWidget = c => {
+    if (c) {
+      this.rawWidgets.push(c);
+    }
+  };
+
+  setRefForm = c => (this.form = c);
+
   handleChange = (field, value) => {
     this.setState(prevState => ({
       data: Object.assign({}, prevState.data, {
@@ -168,11 +176,7 @@ class TableQuickInput extends Component {
 
         return (
           <RawWidget
-            ref={c => {
-              if (c) {
-                this.rawWidgets.push(c);
-              }
-            }}
+            ref={this.setRefWidget}
             entity={attributeType}
             subentity="quickInput"
             subentityId={quickInputId}
@@ -185,9 +189,7 @@ class TableQuickInput extends Component {
             gridAlign={item.gridAlign}
             key={id}
             caption={item.caption}
-            onPatch={(prop, value, callback) =>
-              this.handlePatch(prop, value, callback)
-            }
+            onPatch={this.handlePatch}
             onChange={this.handleChange}
             onBlurWidget={this.handleBlurWidget}
             type="secondary"
@@ -251,7 +253,7 @@ class TableQuickInput extends Component {
       <form
         onSubmit={this.onSubmit}
         className="quick-input-container"
-        ref={c => (this.form = c)}
+        ref={this.setRefForm}
       >
         {this.renderFields(layout, data, docId, 'window', id)}
         <div className="hint">{"(Press 'Enter' to add)"}</div>
