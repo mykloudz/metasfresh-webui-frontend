@@ -758,21 +758,26 @@ class Table extends Component {
     });
   };
 
-  openModal = (windowType, tabId, rowId) => {
-    const { dispatch } = this.props;
-    dispatch(openModal('Add new', windowType, 'window', tabId, rowId));
+  openModal = () => {
+    const { dispatch, type, tabId } = this.props;
+    const rowId = 'NEW';
+
+    dispatch(openModal('Add new', type, 'window', tabId, rowId));
   };
 
-  handleAdvancedEdit = (type, tabId, selected) => {
-    const { dispatch } = this.props;
+  handleAdvancedEdit = () => {
+    const { dispatch, type, tabId } = this.props;
+    const { selected } = this.state;
 
     dispatch(
       openModal('Advanced edit', type, 'window', tabId, selected[0], true)
     );
   };
 
-  handleOpenNewTab = selected => {
+  handleOpenNewTab = () => {
     const { type } = this.props;
+    const { selected } = this.state;
+
     for (let i = 0; i < selected.length; i++) {
       window.open(`/window/${type}/${selected[i]}`, '_blank');
     }
@@ -790,8 +795,9 @@ class Table extends Component {
     });
   };
 
-  handlePromptSubmitClick = selected => {
+  handlePromptSubmitClick = () => {
     const { dispatch, type, docId, updateDocList, tabId } = this.props;
+    const { selected } = this.state;
 
     this.setState(
       {
@@ -972,6 +978,20 @@ class Table extends Component {
     }
 
     onRowEdited && onRowEdited(true);
+  };
+
+  handleOnFieldEdit = () => {
+    const { selected, contextMenu } = this.state;
+
+    if (contextMenu.supportFieldEdit && selected.length === 1) {
+      this.handleFieldEdit(selected, contextMenu.fieldName);
+    }
+  };
+
+  handleToggleExpand = () => {
+    const { toggleFullScreen, fullScreen } = this.props;
+
+    toggleFullScreen(!fullScreen);
   };
 
   renderTableBody = () => {
@@ -1169,18 +1189,12 @@ class Table extends Component {
               }}
               blur={() => this.closeContextMenu()}
               tabId={tabId}
-              onFieldEdit={() => {
-                if (contextMenu.supportFieldEdit && selected.length === 1) {
-                  this.handleFieldEdit(selected, contextMenu.fieldName);
-                }
-              }}
-              onAdvancedEdit={() =>
-                this.handleAdvancedEdit(type, tabId, selected)
-              }
-              onOpenNewTab={() => this.handleOpenNewTab(selected)}
+              onFieldEdit={this.handleOnFieldEdit}
+              onAdvancedEdit={this.handleAdvancedEdit}
+              onOpenNewTab={this.handleOpenNewTab}
               onDelete={
                 !isModal && (tabInfo && tabInfo.allowDelete)
-                  ? () => this.handleDelete()
+                  ? this.handleDelete
                   : null
               }
               onZoomInto={this.handleZoomInto}
@@ -1190,7 +1204,7 @@ class Table extends Component {
             <div className="row">
               <div className="col-xs-12">
                 <TableFilter
-                  openModal={() => this.openModal(type, tabId, 'NEW')}
+                  openModal={this.openModal}
                   {...{
                     toggleFullScreen,
                     fullScreen,
@@ -1288,23 +1302,19 @@ class Table extends Component {
             text="Are you sure?"
             buttons={{ submit: 'Delete', cancel: 'Cancel' }}
             onCancelClick={this.handlePromptCancelClick}
-            onSubmitClick={() => this.handlePromptSubmitClick(selected)}
+            onSubmitClick={this.handlePromptSubmitClick}
           />
         )}
 
         {allowShortcut && (
           <DocumentListContextShortcuts
             onAdvancedEdit={
-              selected.length > 0
-                ? () => this.handleAdvancedEdit(type, tabId, selected)
-                : ''
+              selected.length > 0 ? this.handleAdvancedEdit : null
             }
             onOpenNewTab={
-              selected.length > 0 && mainTable
-                ? () => this.handleOpenNewTab(selected)
-                : ''
+              selected.length > 0 && mainTable ? this.handleOpenNewTab : null
             }
-            onDelete={selected.length > 0 ? () => this.handleDelete() : ''}
+            onDelete={selected.length > 0 ? this.handleDelete : ''}
             getAllLeafs={this.getAllLeafs}
             onIndent={this.handleShortcutIndent}
           />
@@ -1314,7 +1324,7 @@ class Table extends Component {
           !readonly && (
             <TableContextShortcuts
               onToggleQuickInput={this.handleBatchEntryToggle}
-              onToggleExpand={() => toggleFullScreen(!fullScreen)}
+              onToggleExpand={this.handleToggleExpand}
             />
           )}
       </div>
