@@ -93,6 +93,12 @@ class ActionButton extends Component {
     }
   };
 
+  handleDocumentCompleteStatus = () => {
+    const { list } = this.state;
+
+    this.handleChangeStatus(list.find(elem => elem.key === 'CO'));
+  };
+
   getStatusClassName = abrev => {
     const { data } = this.props;
 
@@ -168,9 +174,7 @@ class ActionButton extends Component {
         />
         <ul className="dropdown-status-list">{this.renderStatusList(list)}</ul>
         <DocumentStatusContextShortcuts
-          onDocumentCompleteStatus={() => {
-            this.handleChangeStatus(list.find(elem => elem.key === 'CO'));
-          }}
+          onDocumentCompleteStatus={this.handleDocumentCompleteStatus}
         />
       </div>
     );
