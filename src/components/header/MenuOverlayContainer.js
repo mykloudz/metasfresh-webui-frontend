@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { getWindowBreadcrumb } from '../../actions/MenuActions';
@@ -120,5 +121,10 @@ class MenuOverlayContainer extends Component {
     );
   }
 }
+
+MenuOverlayContainer.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+  onMenuOverlay: PropTypes.func,
+};
 
 export default connect()(MenuOverlayContainer);

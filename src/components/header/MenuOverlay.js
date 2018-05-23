@@ -477,6 +477,15 @@ class MenuOverlay extends Component {
 
 MenuOverlay.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  onClickOutside: PropTypes.func,
+  onMenuOverlay: PropTypes.func,
+};
+
+const noOp = () => {};
+
+MenuOverlay.defaultProps = {
+  onClickOutside: noOp,
+  onMenuOverlay: noOp,
 };
 
 export default connect()(onClickOutside(MenuOverlay));

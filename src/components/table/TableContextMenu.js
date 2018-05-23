@@ -200,6 +200,17 @@ class TableContextMenu extends Component {
 
 TableContextMenu.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  onZoomInto: PropTypes.func,
+  onAdvancedEdit: PropTypes.func,
+  onOpenNewTab: PropTypes.func,
+  onDelete: PropTypes.func,
+  onFieldEdit: PropTypes.func,
+};
+
+const noOp = () => {};
+
+TableContextMenu.defaultProps = {
+  onZoomInto: noOp,
 };
 
 export default connect()(TableContextMenu);

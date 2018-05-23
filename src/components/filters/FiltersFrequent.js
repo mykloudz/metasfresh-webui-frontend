@@ -155,6 +155,13 @@ FiltersFrequent.propTypes = {
   allowOutsideClick: PropTypes.bool.isRequired,
   modalVisible: PropTypes.bool.isRequired,
   active: PropTypes.array,
+  onShow: PropTypes.func,
+};
+
+const noOp = () => {};
+
+FiltersFrequent.defaultProps = {
+  onShow: noOp,
 };
 
 const mapStateToProps = state => {

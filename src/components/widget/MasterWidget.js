@@ -233,10 +233,13 @@ class MasterWidget extends Component {
 
 MasterWidget.propTypes = {
   isOpenDatePicker: PropTypes.bool,
+  onBackdropLock: PropTypes.func,
 };
 
+const noOp = () => {};
+
 MasterWidget.defaultProps = {
-  onBackdropLock: () => {},
+  onBackdropLock: noOp,
 };
 
 export default connect(

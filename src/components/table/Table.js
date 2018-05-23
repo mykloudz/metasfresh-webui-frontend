@@ -58,6 +58,11 @@ class Table extends Component {
     onSelectionChanged: PropTypes.func,
     onRowEdited: PropTypes.func,
     defaultSelected: PropTypes.array,
+
+    docId: PropTypes.string,
+    entity: PropTypes.string,
+    toggleFullScreen: PropTypes.func,
+    onChangePage: PropTypes.func,
   };
 
   _isMounted = false;

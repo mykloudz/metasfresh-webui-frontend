@@ -10,6 +10,8 @@ import {
 import Label from './Label';
 import Suggestion from './Suggestion';
 
+const noOp = () => {};
+
 class Labels extends Component {
   static propTypes = {
     name: PropTypes.string.isRequired,
@@ -22,7 +24,7 @@ class Labels extends Component {
   static defaultProps = {
     entity: 'window',
     selected: [],
-    onChange: () => {},
+    onChange: noOp,
   };
 
   state = {

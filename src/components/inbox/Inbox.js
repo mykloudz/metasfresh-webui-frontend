@@ -179,8 +179,10 @@ Inbox.propTypes = {
   location: PropTypes.object,
 };
 
+const noOp = () => {};
+
 Inbox.defaultProps = {
-  onFocus: () => {},
+  onFocus: noOp,
 };
 
 export default withRouter(

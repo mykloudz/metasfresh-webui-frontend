@@ -232,6 +232,21 @@ class MenuOverlayItem extends Component {
 
 MenuOverlayItem.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  onClickOnFolder: PropTypes.func,
+  onNewRedirect: PropTypes.func,
+  onMenuOverlay: PropTypes.func,
+  openModal: PropTypes.func,
+  back: PropTypes.func,
+};
+
+const noOp = () => {};
+
+MenuOverlayItem.defaultProps = {
+  onClickOnFolder: noOp,
+  onNewRedirect: noOp,
+  onMenuOverlay: noOp,
+  openModal: noOp,
+  back: noOp,
 };
 
 export default connect()(MenuOverlayItem);

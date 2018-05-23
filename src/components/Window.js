@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
 
 import Table from '../components/table/Table';
@@ -266,5 +267,11 @@ class Window extends PureComponent {
     );
   }
 }
+
+Window.propTypes = {
+  onDropFile: PropTypes.func,
+  onRejectDropped: PropTypes.func,
+  onDragStart: PropTypes.func,
+};
 
 export default Window;

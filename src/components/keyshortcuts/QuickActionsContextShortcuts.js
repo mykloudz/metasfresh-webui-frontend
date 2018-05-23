@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 import { Shortcut } from '../keyshortcuts';
 
-export default class QuickActionsContextShortcuts extends Component {
+class QuickActionsContextShortcuts extends Component {
   handlers = {
     QUICK_ACTION_POS: event => {
       event.preventDefault();
@@ -31,3 +32,17 @@ export default class QuickActionsContextShortcuts extends Component {
     ];
   }
 }
+
+QuickActionsContextShortcuts.propTypes = {
+  onClick: PropTypes.func,
+  onToggle: PropTypes.func,
+};
+
+const noOp = () => {};
+
+QuickActionsContextShortcuts.defaultProps = {
+  onClick: noOp,
+  onToggle: noOp,
+};
+
+export default QuickActionsContextShortcuts;

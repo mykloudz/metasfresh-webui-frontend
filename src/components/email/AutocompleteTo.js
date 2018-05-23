@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import Autosuggest from 'react-autosuggest';
 import TagsInput from 'react-tagsinput';
 import classnames from 'classnames';
@@ -105,5 +106,15 @@ class AutocompleteTo extends Component {
     );
   }
 }
+
+AutocompleteTo.propTypes = {
+  onChange: PropTypes.func,
+};
+
+const noOp = () => {};
+
+AutocompleteTo.defaultProps = {
+  onChange: noOp,
+};
 
 export default AutocompleteTo;

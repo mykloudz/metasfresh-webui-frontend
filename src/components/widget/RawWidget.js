@@ -61,9 +61,10 @@ class RawWidget extends Component {
 
     // don't disable onclickoutside for the attributes widget
     if (entity !== 'pattribute') {
-      disableOnClickOutside && disableOnClickOutside();
+      disableOnClickOutside();
     }
-    onFocus && onFocus();
+
+    onFocus();
   };
 
   handleFocus = e => {
@@ -76,8 +77,8 @@ class RawWidget extends Component {
       cachedValue: e.target.value,
     });
 
-    listenOnKeysFalse && listenOnKeysFalse();
-    onFocus && onFocus();
+    listenOnKeysFalse();
+    onFocus();
   };
 
   handleBlur = (widgetField, value, id) => {
@@ -88,16 +89,16 @@ class RawWidget extends Component {
       enableOnClickOutside,
     } = this.props;
 
-    enableOnClickOutside && enableOnClickOutside();
+    enableOnClickOutside();
     dispatch(allowShortcut());
-    onBlur && onBlur(this.willPatch(value));
+    onBlur(this.willPatch(value));
 
     this.setState({
       isEdited: false,
       cachedValue: undefined,
     });
 
-    listenOnKeysTrue && listenOnKeysTrue();
+    listenOnKeysTrue();
 
     if (widgetField) {
       this.handlePatch(widgetField, value, id);
@@ -290,7 +291,7 @@ class RawWidget extends Component {
       disabled: readonly,
       onFocus: this.handleFocus,
       tabIndex: tabIndex,
-      onChange: e => onChange && onChange(widgetField, e.target.value),
+      onChange: e => onChange(widgetField, e.target.value),
       onBlur: e => this.handleBlur(widgetField, e.target.value, id),
       onKeyDown: e =>
         this.handleKeyDown(e, widgetField, e.target.value, widgetType),
@@ -954,7 +955,7 @@ class RawWidget extends Component {
               <DevicesWidget
                 devices={fields[0].devices}
                 tabIndex={1}
-                onChange={value => onPatch && onPatch(fields[0].field, value)}
+                onChange={value => onPatch(fields[0].field, value)}
               />
             )}
         </div>
@@ -1012,11 +1013,23 @@ RawWidget.propTypes = {
   defaultValue: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
   noLabel: PropTypes.bool,
   isOpenDatePicker: PropTypes.bool,
+  disableOnClickOutside: PropTypes.func,
+  enableOnClickOutside: PropTypes.func,
 };
+
+const noOp = () => {};
 
 RawWidget.defaultProps = {
   tabIndex: 0,
-  onZoomInto: () => {},
+  onFocus: noOp,
+  onZoomInto: noOp,
+  listenOnKeysFalse: noOp,
+  disableOnClickOutside: noOp,
+  enableOnClickOutside: noOp,
+  onBlur: noOp,
+  listenOnKeysTrue: noOp,
+  onChange: noOp,
+  onPatch: noOp,
 };
 
 export default connect(state => ({

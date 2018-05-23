@@ -140,6 +140,13 @@ class FiltersNotFrequent extends Component {
 FiltersNotFrequent.propTypes = {
   allowOutsideClick: PropTypes.bool.isRequired,
   modalVisible: PropTypes.bool.isRequired,
+  onShow: PropTypes.func,
+};
+
+const noOp = () => {};
+
+FiltersNotFrequent.defaultProps = {
+  onShow: noOp,
 };
 
 const mapStateToProps = state => {

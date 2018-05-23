@@ -417,6 +417,15 @@ class TableItem extends PureComponent {
 
 TableItem.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  onRightClick: PropTypes.func,
+  onRowCollapse: PropTypes.func,
+  includedDocuments: PropTypes.array,
+};
+
+const noOp = () => {};
+
+TableItem.defaultProps = {
+  onRightClick: noOp,
 };
 
 export default connect(false, false, false, { withRef: true })(TableItem);

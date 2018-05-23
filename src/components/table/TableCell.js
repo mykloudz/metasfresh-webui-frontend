@@ -1,6 +1,7 @@
 import Moment from 'moment';
 import numeral from 'numeral';
 import React, { PureComponent } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import classnames from 'classnames';
 
@@ -250,6 +251,15 @@ class TableCell extends PureComponent {
     );
   }
 }
+
+TableCell.propTypes = {
+  item: PropTypes.shape({
+    widgetType: PropTypes.string,
+    gridAlign: PropTypes.string,
+  }),
+  onKeyDown: PropTypes.func,
+  onRightClick: PropTypes.func,
+};
 
 export default connect(state => ({
   modalVisible: state.windowHandler.modal.visible,
