@@ -207,18 +207,20 @@ class MasterWidget extends Component {
       });
   };
 
+  handleFocus = () => this.props.onBackdropLock(true);
+
+  handleBlur = () => this.props.onBackdropLock(false);
+
   render() {
-    const { onBackdropLock } = this.props;
     const { updated, data } = this.state;
-    const handleFocusFn = onBackdropLock ? onBackdropLock : () => {};
 
     return (
       <RawWidget
         {...this.props}
         updated={updated}
         data={data}
-        onFocus={() => handleFocusFn(true)}
-        onBlur={() => handleFocusFn(false)}
+        onFocus={this.handleFocus}
+        onBlur={this.handleBlur}
         onPatch={this.handlePatch}
         onChange={this.handleChange}
         onProcess={this.handleProcess}
@@ -231,6 +233,10 @@ class MasterWidget extends Component {
 
 MasterWidget.propTypes = {
   isOpenDatePicker: PropTypes.bool,
+};
+
+MasterWidget.defaultProps = {
+  onBackdropLock: () => {},
 };
 
 export default connect(
