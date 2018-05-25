@@ -462,9 +462,11 @@ TableItem.propTypes = {
   dispatch: PropTypes.func.isRequired,
   onClick: PropTypes.func.isRequired,
   handleSelect: PropTypes.func,
+  handleRowCollapse: PropTypes.func,
   onDoubleClick: PropTypes.func,
   indentSupported: PropTypes.bool,
   collapsed: PropTypes.bool,
+  collapsible: PropTypes.bool,
   processed: PropTypes.bool,
   notSaved: PropTypes.bool,
 };
