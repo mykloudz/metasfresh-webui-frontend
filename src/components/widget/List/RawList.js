@@ -342,6 +342,7 @@ class RawList extends PureComponent {
             </div>
             {clearable &&
               selected &&
+              !mandatory &&
               !readonly && (
                 <div className="input-icon" onClick={this.handleClear}>
                   <i className="meta-icon-close-alt" />
