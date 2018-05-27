@@ -234,6 +234,7 @@ MenuOverlayItem.propTypes = {
   dispatch: PropTypes.func.isRequired,
   onClickOnFolder: PropTypes.func,
   onNewRedirect: PropTypes.func,
+  onRedirect: PropTypes.func,
   onMenuOverlay: PropTypes.func,
   openModal: PropTypes.func,
   back: PropTypes.func,
@@ -243,6 +244,7 @@ const noOp = () => {};
 
 MenuOverlayItem.defaultProps = {
   onClickOnFolder: noOp,
+  onRedirect: noOp,
   onNewRedirect: noOp,
   onMenuOverlay: noOp,
   openModal: noOp,

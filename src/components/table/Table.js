@@ -47,6 +47,8 @@ export function shouldRenderColumn(column) {
   return column.restrictToMediaTypes.indexOf(mediaType) !== -1;
 }
 
+const noOp = () => {};
+
 class Table extends Component {
   static propTypes = {
     // from @connect
@@ -59,10 +61,21 @@ class Table extends Component {
     onRowEdited: PropTypes.func,
     defaultSelected: PropTypes.array,
 
-    docId: PropTypes.string,
+    tabId: PropTypes.number,
+    docId: PropTypes.number,
     entity: PropTypes.string,
     toggleFullScreen: PropTypes.func,
     onChangePage: PropTypes.func,
+    onCloseOverlays: PropTypes.func,
+  };
+
+  static defaultProps = {
+    onSelectionChanged: noOp,
+    onRowEdited: noOp,
+    toggleFullScreen: noOp,
+    onCloseOverlays: noOp,
+    onDoubleClick: noOp,
+    showIncludedViewOnSelect: noOp,
   };
 
   _isMounted = false;
@@ -180,7 +193,7 @@ class Table extends Component {
       if (!rowEdited) {
         this.getIndentData(firstLoad);
       } else {
-        onRowEdited && onRowEdited(false);
+        onRowEdited(false);
       }
     }
 
@@ -200,7 +213,7 @@ class Table extends Component {
     this._isMounted = false;
 
     this.deselectAllProducts();
-    if (showIncludedViewOnSelect && !isIncluded) {
+    if (!isIncluded) {
       showIncludedViewOnSelect({
         showIncludedView: false,
         windowType,
@@ -399,7 +412,7 @@ class Table extends Component {
     this.selectRangeProduct(toSelect);
   };
 
-  selectOneProduct = (id, idFocused, idFocusedDown, cb) => {
+  selectOneProduct = (id, idFocused, idFocusedDown, cb = () => {}) => {
     const { dispatch, tabInfo, type, viewId } = this.props;
 
     this.setState(
@@ -418,7 +431,7 @@ class Table extends Component {
         }
 
         this.triggerFocus(idFocused, idFocusedDown);
-        cb && cb();
+        cb();
       }
     );
   };
@@ -444,14 +457,14 @@ class Table extends Component {
     return newSelected;
   };
 
-  deselectAllProducts = cb => {
+  deselectAllProducts = (cb = () => {}) => {
     const { dispatch, tabInfo, type, viewId } = this.props;
 
     this.setState(
       {
         selected: [],
       },
-      cb && cb()
+      cb()
     );
 
     if (tabInfo) {
@@ -638,7 +651,7 @@ class Table extends Component {
         }
         break;
       case 'Escape':
-        onCloseOverlays && onCloseOverlays();
+        onCloseOverlays();
         break;
     }
   };
@@ -683,9 +696,7 @@ class Table extends Component {
         this.selectOneProduct(id);
       }
 
-      if (onSelectionChanged) {
-        onSelectionChanged(newSelection);
-      }
+      onSelectionChanged(newSelection);
 
       return newSelection.length > 0;
     }
@@ -982,7 +993,7 @@ class Table extends Component {
       });
     }
 
-    onRowEdited && onRowEdited(true);
+    onRowEdited(true);
   };
 
   handleOnFieldEdit = () => {
@@ -1054,9 +1065,7 @@ class Table extends Component {
           }}
           rowId={item[keyProperty]}
           tabId={tabId}
-          onDoubleClick={() =>
-            onDoubleClick && onDoubleClick(item[keyProperty])
-          }
+          onDoubleClick={() => onDoubleClick(item[keyProperty])}
           onClick={e => {
             const selected = this.handleClick(e, keyProperty, item);
 

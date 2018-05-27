@@ -125,6 +125,7 @@ class MenuOverlayContainer extends Component {
 MenuOverlayContainer.propTypes = {
   dispatch: PropTypes.func.isRequired,
   onMenuOverlay: PropTypes.func,
+  onClickOnFolder: PropTypes.func,
 };
 
 export default connect()(MenuOverlayContainer);
