@@ -4,7 +4,10 @@ import { connect } from 'react-redux';
 import { List } from 'immutable';
 import { findKey } from 'lodash';
 
-import { dropdownRequest } from '../../../actions/GenericActions';
+import {
+  dropdownRequest,
+  dropdownModalRequest,
+} from '../../../actions/GenericActions';
 import { getViewAttributeDropdown } from '../../../actions/ViewAttributesActions';
 import RawList from './RawList';
 
@@ -70,7 +73,7 @@ class ListWidget extends Component {
     }
   }
 
-  requestListData = (forceSelection = false, forceFocus = false) => {
+  requestListData = (forceSelection = false, ignoreFocus = false) => {
     const {
       properties,
       dataId,
@@ -98,20 +101,32 @@ class ListWidget extends Component {
       ? properties[0].parameterName
       : properties[0].field;
 
-    const request = attribute
-      ? getViewAttributeDropdown(windowType, viewId, dataId, propertyName)
-      : dropdownRequest({
-          attribute,
-          docId: dataId,
-          docType: windowType,
-          entity,
-          subentity,
-          subentityId,
-          tabId,
-          viewId,
-          propertyName,
-          rowId,
-        });
+    let request = null;
+
+    if (viewId && entity === 'window' && !filterWidget) {
+      request = dropdownModalRequest({
+        windowId: windowType,
+        fieldName: propertyName,
+        entity: 'documentView',
+        viewId,
+        rowId,
+      });
+    } else {
+      request = attribute
+        ? getViewAttributeDropdown(windowType, viewId, dataId, propertyName)
+        : dropdownRequest({
+            attribute,
+            docId: dataId,
+            docType: windowType,
+            entity,
+            subentity,
+            subentityId,
+            tabId,
+            viewId,
+            propertyName,
+            rowId,
+          });
+    }
 
     request.then(res => {
       let values = res.data.values || [];
@@ -139,7 +154,8 @@ class ListWidget extends Component {
       if (values.length === 0 && lastProperty) {
         disableAutofocus();
       } else if (
-        (forceFocus || this.state.autoFocus) &&
+        !ignoreFocus &&
+        this.state.autoFocus &&
         values &&
         values.length > 1
       ) {
@@ -172,6 +188,7 @@ class ListWidget extends Component {
 
     this.setState(
       {
+        autoFocus: false,
         listFocused: false,
         list: null,
       },

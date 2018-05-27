@@ -1,7 +1,7 @@
 import Moment from 'moment';
+import PropTypes from 'prop-types';
 import numeral from 'numeral';
 import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import classnames from 'classnames';
 
@@ -173,7 +173,7 @@ class TableCell extends PureComponent {
       viewId,
       modalVisible,
     } = this.props;
-    const docId = this.props.docId + '';
+    const docId = `${this.props.docId}`;
     const tdValue = !isEdited
       ? TableCell.fieldValueToString(
           widgetData[0].value,
@@ -259,6 +259,17 @@ TableCell.propTypes = {
   }),
   onKeyDown: PropTypes.func,
   onRightClick: PropTypes.func,
+  onDoubleClick: PropTypes.func,
+  onClickOutside: PropTypes.func,
+  onCellChange: PropTypes.func,
+  isEdited: PropTypes.bool,
+};
+
+const noOp = () => {};
+
+TableCell.defaultProps = {
+  onDoubleClick: noOp,
+  onClickOutside: noOp,
 };
 
 export default connect(state => ({
