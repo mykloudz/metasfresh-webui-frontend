@@ -4,7 +4,7 @@ describe('Business partner window widgets test', function() {
     cy.loginByForm();
   });
 
-  context('Tabs', function() {
+  context('DataCheck', function() {
     beforeEach(function() {
       cy.visit('/window/123/2155894');
       cy
@@ -18,9 +18,10 @@ describe('Business partner window widgets test', function() {
           .get('.header-breadcrumb-sitename')
           .should('contain', 'testfirmaWebUI');
 
-          cy.get('form-field-Phone').find('input').should('contain', '0049695556666')
+        cy.get('.form-field-value').find('input').should('contain', 'testfirmaWebUI');
+
         
-          cy
+        cy
           .get('Search-Key') 
           .should('contain', 'testfirmaWebUI');
 
