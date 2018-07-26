@@ -18,12 +18,14 @@ describe('Business partner window widgets test', function() {
           .get('.header-breadcrumb-sitename')
           .should('contain', 'testfirmaWebUI');
 
-        cy
-          .get('Name')
+          cy.get('.form-field-Phone').find('input').should('contain', '0049695556666')
+        
+          cy
+          .get('Search-Key') 
           .should('contain', 'testfirmaWebUI');
 
         cy
-          .get('Search-Key') 
+          .get('Name')
           .should('contain', 'testfirmaWebUI');
 
         cy
