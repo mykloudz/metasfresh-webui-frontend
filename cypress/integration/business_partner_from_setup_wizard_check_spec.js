@@ -18,7 +18,7 @@ describe('Business partner window widgets test', function() {
           .get('.header-breadcrumb-sitename')
           .should('contain', 'testfirmaWebUI');
 
-          cy.get('.form-field-Phone').find('input').should('contain', '0049695556666')
+          cy.get('form-field-Phone').find('input').should('contain', '0049695556666')
         
           cy
           .get('Search-Key') 
