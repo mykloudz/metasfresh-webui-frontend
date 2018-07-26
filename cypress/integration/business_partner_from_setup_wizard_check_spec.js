@@ -19,7 +19,7 @@ describe('Business partner window widgets test', function() {
           .should('contain', 'testfirmaWebUI');
 
         cy
-          .get('Search Key')
+          .get('0') //Search Key
           .should('contain', 'testfirmaWebUI');
 
         cy
