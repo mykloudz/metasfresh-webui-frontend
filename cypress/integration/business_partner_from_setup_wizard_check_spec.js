@@ -12,14 +12,14 @@ describe('Business partner window widgets test', function() {
         .should('contain', 'testfirmaWebUI');
     });
 
-    context('Vendor', function() {
-      it('Check if list widget works properly', function() {
+    specify('Check the data entry from Initial SetUp Wizard', function() {
+        describe('Check data in bpartner window', function() {
         cy
           .get('.header-breadcrumb-sitename')
           .should('contain', 'testfirmaWebUI');
 
         cy
-          .get('0') //Search Key
+          .get('.SearchKey') 
           .should('contain', 'testfirmaWebUI');
 
         cy
