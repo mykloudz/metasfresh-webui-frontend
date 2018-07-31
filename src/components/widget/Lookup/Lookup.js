@@ -152,7 +152,7 @@ class Lookup extends Component {
     );
   };
 
-  dropdownListToggle = (value, field) => {
+  dropdownListToggle = (value, field, forceBlur) => {
     const { onFocus, onBlur } = this.props;
 
     this.setState({
@@ -165,9 +165,11 @@ class Lookup extends Component {
       },
     });
 
+    console.log('Lookup dropdownListToggle: ', value, field, !!onFocus, !!onBlur)
+
     if (value && onFocus) {
       onFocus();
-    } else if (!value && onBlur) {
+    } else if ((!value && onBlur) || forceBlur) {
       onBlur();
     }
   };

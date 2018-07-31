@@ -38,7 +38,8 @@ class RawLookup extends Component {
     if (selected) {
       this.inputSearch.value = selected.caption;
     } else {
-      this.handleBlur(this.clearState);
+      console.log('here3')
+      // this.handleBlur(this.clearState);
     }
 
     if (defaultValue) {
@@ -189,6 +190,7 @@ class RawLookup extends Component {
       this.inputSearch.focus();
     }, 0);
 
+    console.log('here1 ?')
     this.handleBlur();
   };
 
@@ -202,6 +204,7 @@ class RawLookup extends Component {
       mainProperty,
     } = this.props;
 
+    console.log('here ?')
     this.handleBlur();
 
     dispatch(
@@ -221,12 +224,17 @@ class RawLookup extends Component {
   };
 
   handleBlur = () => {
+    const { entity } = this.props;
+
+    console.log('RawLookup handleBlur: ', entity)
+
     this.setState(
       {
         isFocused: false,
       },
       () => {
-        this.props.onDropdownListToggle(false);
+        const forceBlur = entity === 'address' ? true : false;
+        this.props.onDropdownListToggle(false, null, forceBlur);
       }
     );
   };

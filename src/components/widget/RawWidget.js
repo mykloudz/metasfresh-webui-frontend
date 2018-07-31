@@ -106,6 +106,8 @@ class RawWidget extends Component {
 
     listenOnKeysTrue && listenOnKeysTrue();
 
+    console.log('RawWidget handleBlur: ', widgetField)
+
     if (widgetField) {
       this.handlePatch(widgetField, value, id);
     }

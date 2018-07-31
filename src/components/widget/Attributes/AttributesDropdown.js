@@ -36,6 +36,8 @@ class AttributesDropdown extends Component {
     const { patchCallbacks } = this.state;
     const updatedCallbacks = patchCallbacks.set(attrId, true);
 
+    console.log('AttributesDropdown handlePatch: ', prop, value, attrId)
+
     this.setState(
       {
         patchCallbacks: updatedCallbacks,
