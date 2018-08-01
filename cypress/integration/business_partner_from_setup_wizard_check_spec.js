@@ -20,9 +20,9 @@ describe('Business partner window widgets test', function() {
 
         cy.get('.form-field-Value').find('input').should('have.value', 'testfirmaWebUI');
 
-        cy.get('.form-field-CompanyName').find('input').should('have.value', 'testfirmaWebUI');
+        cy.get('.form-field-Name_Name_Name').find('input').should('have.value', 'testfirmaWebUI');
       
-        cy.get('.form-field-AD_Org_ID').find('input').should('have.value', 'testfirmaWebUI');
+        cy.get('.form-field-Organisation').find('input').should('have.value', 'testfirmaWebUI');
       
       });
     });
