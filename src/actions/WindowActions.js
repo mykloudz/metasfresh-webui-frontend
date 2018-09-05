@@ -586,18 +586,40 @@ export function patch(
 
     try {
       const response = await patchRequest(options);
-
       const data =
         response.data instanceof Array ? response.data : [response.data];
+      const dataItem = data[0];
       await dispatch(
         mapDataToState(data, isModal, rowId, id, windowType, isAdvanced)
       );
 
-      await dispatch(indicatorState('saved'));
-      await dispatch({ type: PATCH_SUCCESS, symbol });
+      if (
+        dataItem &&
+        dataItem.validStatus &&
+        !dataItem.validStatus.valid &&
+        property === dataItem.validStatus.fieldName
+      ) {
+        await dispatch(indicatorState('error'));
+        await dispatch({ type: PATCH_FAILURE, symbol });
+        const errorMessage = dataItem.validStatus.reason;
 
-      return data;
+        dispatch(
+          addNotification(
+            'Error: ' + errorMessage.split(' ', 4).join(' ') + '...',
+            errorMessage,
+            5000,
+            'error',
+            ''
+          )
+        );
+      } else {
+        await dispatch(indicatorState('saved'));
+        await dispatch({ type: PATCH_SUCCESS, symbol });
+
+        return data;
+      }
     } catch (error) {
+      await dispatch(indicatorState('error'));
       await dispatch({ type: PATCH_FAILURE, symbol });
 
       const response = await getData(
@@ -700,7 +722,9 @@ function updateRow(row, scope) {
 
 function mapDataToState(data, isModal, rowId, id, windowType, isAdvanced) {
   return dispatch => {
-    data.map((item, index) => {
+    const dataArray = typeof data.splice === 'function' ? data : [data];
+
+    dataArray.map((item, index) => {
       const parsedItem = item.fieldsByName
         ? {
             ...item,

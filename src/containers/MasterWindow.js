@@ -143,10 +143,21 @@ class MasterWindow extends Component {
               return;
             }
 
+            const orderBy = tabLayout.orderBy;
+            let sortingOrder = null;
+
+            if (orderBy && orderBy.length) {
+              const ordering = orderBy[0];
+              sortingOrder =
+                (ordering.ascending ? '+' : '-') + ordering.fieldName;
+            }
+
             if (includedTabsInfo[tabId]) {
-              getTab(tabId, params.windowType, master.docId).then(tab => {
-                dispatch(addRowData({ [tabId]: tab }, 'master'));
-              });
+              getTab(tabId, params.windowType, master.docId, sortingOrder).then(
+                tab => {
+                  dispatch(addRowData({ [tabId]: tab }, 'master'));
+                }
+              );
             }
           });
         }
@@ -333,6 +344,7 @@ class MasterWindow extends Component {
       documentSummaryElement &&
       master.data[documentSummaryElement.fields[0].field];
 
+    // TODO: We should be using indicator from the state instead of another variable
     const isDocumentNotSaved =
       dataId !== 'notfound' &&
       master.saveStatus.saved !== undefined &&
