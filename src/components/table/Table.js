@@ -1103,7 +1103,7 @@ class Table extends Component {
     }
 
     return (
-      <div className="table-flex-wrapper">
+      <div ref={ref => (this.wrapper = ref)} className="table-flex-wrapper">
         <div
           className={classnames('table-flex-wrapper', {
             'table-flex-wrapper-row': mainTable,
@@ -1156,6 +1156,7 @@ class Table extends Component {
                   tabId={tabid}
                   handleBatchEntryToggle={this.handleBatchEntryToggle}
                   allowCreateNew={tabInfo && tabInfo.allowCreateNew}
+                  wrapperHeight={this.wrapper && this.wrapper.offsetHeight}
                 />
               </div>
             </div>
