@@ -248,7 +248,6 @@ class TableQuickInput extends Component {
 
   render() {
     const { docId } = this.props;
-
     const { data, layout, id } = this.state;
 
     return (
@@ -267,6 +266,7 @@ class TableQuickInput extends Component {
 
 TableQuickInput.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  forceHeight: PropTypes.number,
 };
 
 export default connect()(TableQuickInput);
