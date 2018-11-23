@@ -127,6 +127,15 @@ Cypress.Commands.add('writeIntoStringField', (fieldName, stringValue) => {
   });
 });
 
+
+  Cypress.Commands.add('deleteFromStringField', (fieldName) => {
+  describe('Delete value from string field', function() {
+      cy.get(`.form-field-${fieldName}`)
+        .find('input')
+        .clear();
+    });
+  });
+  
 Cypress.Commands.add('writeIntoTextField', (fieldName, stringValue) => {
   describe('Enter value into text field', function() {
       cy.get(`.form-field-${fieldName}`)
@@ -134,7 +143,7 @@ Cypress.Commands.add('writeIntoTextField', (fieldName, stringValue) => {
         .type(stringValue);
     });
   });
-
+  
 Cypress.Commands.add(
   'writeIntoLookupListField',
   (fieldName, partialValue, listValue) => {
