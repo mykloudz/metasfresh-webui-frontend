@@ -302,3 +302,12 @@ Cypress.Commands.add('executeQuickAction', (actionName, active) => {
     return cy.get('.quick-actions-wrapper').click();
   });
 });
+
+  Cypress.Commands.add('clearStringField', (fieldName) => {
+  describe('Clear string field', function() {
+      cy.get(`.form-field-${fieldName}`)
+        .find('input')
+        .clear();
+    });
+  });
+  
