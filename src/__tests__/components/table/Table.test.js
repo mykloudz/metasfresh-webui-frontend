@@ -4,9 +4,12 @@ import { mount, shallow, render } from 'enzyme';
 import uuid from 'uuid/v4';
 
 import Table, { Table as TableBare } from '../../../../components/table/Table';
-import fixtures from '../../../../../test_setup/fixtures/table.json';
+import fixtures from '../../../../../test_setup/fixtures/table_full.json';
 
-const createDummyProps = function(props, data) {
+const TAB = fixtures.tabs[0];
+const DATA = fixtures.data;
+
+const createDummyProps = function(tab, data, props) {
   return {
     allowShortcut: true,
     allowOutsideClick: true,
@@ -15,7 +18,35 @@ const createDummyProps = function(props, data) {
   };
 };
 
-describe('Table component', () => {
+
+          <Table
+            {...{
+              caption,
+              description,
+              rowData,
+              tabId,
+              windowId,
+              sort,
+              newRow,
+              internalName,
+            }}
+            entity="window"
+            keyProperty="rowId"
+            key={tabId}
+            cols={elements}
+            orderBy={defaultOrderBys}
+            docId={dataId}
+            emptyText={emptyResultText}
+            emptyHint={emptyResultHint}
+            tabIndex={this.tabIndex.tabs}
+            queryOnActivate={queryOnActivate}
+            supportQuickInput={supportQuickInput}
+            tabInfo={tabsInfo && tabsInfo[tabId]}
+            disconnectFromState={true}
+          />
+
+
+describe('Table in Tab component', () => {
   describe('rendering tests:', () => {
     it('renders without errors', () => {
 
