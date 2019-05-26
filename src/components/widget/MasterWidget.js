@@ -144,11 +144,11 @@ class MasterWidget extends Component {
     return ret;
   };
 
-  //
-  // This method may looks like a redundant for this one above,
-  // but is need to handle controlled components if
-  // they patch on other event than onchange
-  //
+  /**
+   * This method may look redundant to the one above - handlePatch(),
+   * but is not. It's needed to handle controlled components when
+   * they patch on another event than onChange
+   */
   handleChange = (property, val) => {
     const {
       updatePropertyValue,
