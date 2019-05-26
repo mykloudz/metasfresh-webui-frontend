@@ -244,11 +244,7 @@ class Window extends PureComponent {
   };
 
   renderTabs = tabs => {
-    const {
-      layout: { windowId },
-      data,
-      dataId,
-    } = this.props;
+    const { layout: { windowId }, data, dataId } = this.props;
     const { fullScreen } = this.state;
     const tabsArray = [];
     const tabsByIds = {};

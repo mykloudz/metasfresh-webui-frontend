@@ -71,9 +71,9 @@ Also remember to respect our code-schema rules. All of them are listed in __esli
 
 ### Dictionary
 
-Project has a generic structure. Name of components and their containers should be strictly defined and keep for better understanding.
+The project has a generic structure. The name of components and their containers shall be strictly defined and kept for a better understanding.
 
-__MasterWindow__ - (e.g. `/window/143/1000000`) It is container for displaying single document view.
+__MasterWindow__ - (e.g. `/window/143/1000000`) It is the container for displaying a single document view (main view, detailed view).
 
 __DocList__ - (e.g. `/window/143/`) It's a view with a list of documents kept in table.
 
