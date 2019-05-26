@@ -365,6 +365,9 @@ const mapStateToProps = state => ({
   filter: state.windowHandler.filter,
 });
 
-export default connect(mapStateToProps, false, false, { withRef: true })(
-  ListWidget
-);
+export default connect(
+  mapStateToProps,
+  false,
+  false,
+  { withRef: true }
+)(ListWidget);
