@@ -247,13 +247,7 @@ class MasterWindow extends Component {
       return Promise.reject();
     }
 
-    const {
-      dispatch,
-      master: {
-        data,
-        layout: { type },
-      },
-    } = this.props;
+    const { dispatch, master: { data, layout: { type } } } = this.props;
     const dataId = data ? data.ID.value : -1;
 
     let fd = new FormData();
@@ -300,11 +294,7 @@ class MasterWindow extends Component {
   };
 
   sort = (asc, field, startPage, page, tabId) => {
-    const {
-      dispatch,
-      master,
-      params: { windowType },
-    } = this.props;
+    const { dispatch, master, params: { windowType } } = this.props;
     const orderBy = (asc ? '+' : '-') + field;
     const dataId = master.docId;
 
@@ -419,18 +409,22 @@ class MasterWindow extends Component {
           />
         )}
 
-        {enableTutorial && introSteps && introSteps.length > 0 && (
-          <Steps
-            enabled={introEnabled}
-            steps={introSteps}
-            initialStep={0}
-            onExit={this.handleIntroExit}
-          />
-        )}
+        {enableTutorial &&
+          introSteps &&
+          introSteps.length > 0 && (
+            <Steps
+              enabled={introEnabled}
+              steps={introSteps}
+              initialStep={0}
+              onExit={this.handleIntroExit}
+            />
+          )}
 
-        {enableTutorial && introHints && introHints.length > 0 && (
-          <Hints enabled={hintsEnabled} hints={introHints} />
-        )}
+        {enableTutorial &&
+          introHints &&
+          introHints.length > 0 && (
+            <Hints enabled={hintsEnabled} hints={introHints} />
+          )}
       </Container>
     );
   }
