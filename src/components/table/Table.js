@@ -1036,8 +1036,8 @@ class Table extends Component {
             supportFieldEdit
           )
         }
-          changeListenOnTrue={() => this.changeListen(true)}
-          changeListenOnFalse={() => this.changeListen(false)}
+        changeListenOnTrue={() => this.changeListen(true)}
+        changeListenOnFalse={() => this.changeListen(false)}
         newRow={i === rows.length - 1 ? newRow : false}
         isSelected={
           selected &&
@@ -1258,6 +1258,10 @@ class Table extends Component {
                 orderBy,
                 queryLimitHit,
                 disablePaginationShortcuts,
+              }}
+              handleChangePage={pages => {
+                this.deselectAllProducts();
+                handleChangePage(pages);
               }}
               selected={selected || [undefined]}
               pageLength={pageLength}
