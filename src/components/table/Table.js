@@ -696,22 +696,14 @@ class Table extends Component {
     return true;
   };
 
-  handleRightClick = (e, id, fieldName, supportZoomInto, supportFieldEdit) => {
+  handleRightClick = (e, id, fieldName, supportZoomInto, supportFieldEdit, isClosed, docStatus) => {
     e.preventDefault();
 
     const { selected } = this.state;
     const { clientX, clientY } = e;
 
     if (selected.indexOf(id) > -1) {
-      this.setContextMenu(
-        clientX,
-        clientY,
-        fieldName,
-        supportZoomInto,
-        supportFieldEdit
-      );
-    } else {
-      this.selectOneProduct(id, null, null, () => {
+      if((docStatus != 'IP') || (docStatus == 'IP' && !isClosed)) {  
         this.setContextMenu(
           clientX,
           clientY,
@@ -719,10 +711,23 @@ class Table extends Component {
           supportZoomInto,
           supportFieldEdit
         );
-      });
+      }
+      else {
+        this.selectOneProduct(id, null, null, () => {
+          if((docStatus != 'IP') || (docStatus == 'IP' && !isClosed)) {
+            this.setContextMenu(
+              clientX,
+              clientY,
+              fieldName,
+              supportZoomInto,
+              supportFieldEdit
+            );
+          }
+        });
+      }
     }
   };
-
+  
   setContextMenu = (
     clientX,
     clientY,
@@ -962,6 +967,7 @@ class Table extends Component {
       openIncludedViewOnSelect,
       viewId,
       supportOpenRecord,
+      docStatus
     } = this.props;
 
     const { selected, rows, collapsedRows, collapsedParentsRows } = this.state;
@@ -1033,7 +1039,9 @@ class Table extends Component {
             item[keyProperty],
             fieldName,
             !!supportZoomInto,
-            supportFieldEdit
+            supportFieldEdit,
+            (windowId == 540581) ? item.fieldsByName.IsClosed.value : false,
+            (windowId == 540581) ? docStatus.key : ''
           )
         }
         changeListenOnTrue={() => this.changeListen(true)}

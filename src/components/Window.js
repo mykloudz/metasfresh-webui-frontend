@@ -128,7 +128,7 @@ class Window extends PureComponent {
 
   getTabs = (tabs, dataId, tabsArray, tabsByIds, parentTab) => {
     const { windowId } = this.props.layout;
-    const { rowData, newRow, tabsInfo, sort, allowShortcut } = this.props;
+    const { rowData, newRow, tabsInfo, sort, allowShortcut, data } = this.props;
     const { fullScreen, isSectionExpandTooltipShow } = this.state;
 
     tabs.forEach(elem => {
@@ -233,6 +233,7 @@ class Window extends PureComponent {
             supportQuickInput={supportQuickInput}
             tabInfo={tabsInfo && tabsInfo[tabId]}
             disconnectFromState={true}
+            docStatus={data.DocStatus.value}
           />
         );
       }
