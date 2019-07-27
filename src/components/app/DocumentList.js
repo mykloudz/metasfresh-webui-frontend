@@ -64,7 +64,7 @@ export class DocumentList extends Component {
     this.pageLength =
       currentDevice.type === 'mobile' || currentDevice.type === 'tablet'
         ? 9999
-        : 20;
+        : 100;
     this.supportAttribute = false;
 
     this.state = {
@@ -77,7 +77,7 @@ export class DocumentList extends Component {
       sort: defaultSort,
       filtersActive: Map(),
       initialValuesNulled: Map(),
-      clickOutsideLock: false,
+      clickOutsideLock: true,
       isShowIncluded: false,
       hasShowIncluded: false,
       triggerSpinner: true,
