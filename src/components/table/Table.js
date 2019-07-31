@@ -703,28 +703,30 @@ class Table extends Component {
     const { clientX, clientY } = e;
 
     if (selected.indexOf(id) > -1) {
-      if((docStatus != 'IP') || (docStatus == 'IP' && !isClosed)) {  
+      //if((docStatus != 'DR') || (docStatus == 'DR' && !isClosed)) {  
         this.setContextMenu(
           clientX,
           clientY,
           fieldName,
           supportZoomInto,
-          supportFieldEdit
+          supportFieldEdit,
+          isClosed
         );
-      }
-      else {
-        this.selectOneProduct(id, null, null, () => {
-          if((docStatus != 'IP') || (docStatus == 'IP' && !isClosed)) {
-            this.setContextMenu(
-              clientX,
-              clientY,
-              fieldName,
-              supportZoomInto,
-              supportFieldEdit
-            );
-          }
-        });
-      }
+      //}
+    }
+    else {
+      this.selectOneProduct(id, null, null, () => {
+        //if((docStatus != 'DR') || (docStatus == 'DR' && !isClosed)) {
+          this.setContextMenu(
+            clientX,
+            clientY,
+            fieldName,
+            supportZoomInto,
+            supportFieldEdit,
+            isClosed
+          );
+        //}
+      });
     }
   };
   
@@ -733,7 +735,8 @@ class Table extends Component {
     clientY,
     fieldName,
     supportZoomInto,
-    supportFieldEdit
+    supportFieldEdit,
+    isClosed
   ) => {
     this.setState({
       contextMenu: Object.assign({}, this.state.contextMenu, {
@@ -743,6 +746,7 @@ class Table extends Component {
         fieldName,
         supportZoomInto,
         supportFieldEdit,
+        isClosed
       }),
     });
   };
@@ -1040,7 +1044,7 @@ class Table extends Component {
             fieldName,
             !!supportZoomInto,
             supportFieldEdit,
-            (windowId == 540581) ? item.fieldsByName.IsClosed.value : false,
+            (windowId == 540581) ? item.fieldsByName.isshortclosed.value : false,
             (windowId == 540581) ? docStatus.key : ''
           )
         }
@@ -1122,6 +1126,7 @@ class Table extends Component {
       disablePaginationShortcuts,
       hasIncluded,
       blurOnIncludedView,
+      docStatus,
     } = this.props;
 
     const {
@@ -1168,7 +1173,7 @@ class Table extends Component {
               }
               onOpenNewTab={handleOpenNewTab}
               handleDelete={
-                !isModal && (tabInfo && tabInfo.allowDelete)
+                !isModal && (tabInfo && tabInfo.allowDelete) && ((docStatus != 'IP') || (docStatus == 'IP' && !contextMenu.isClosed))
                   ? this.handleDelete
                   : null
               }
@@ -1303,7 +1308,7 @@ class Table extends Component {
                 : undefined
             }
             handleDelete={
-              selected && selected.length > 0 && selected[0]
+              selected && selected.length > 0 && selected[0] && ((docStatus != 'IP') || (docStatus == 'IP' && !contextMenu.isClosed))
                 ? this.handleDelete
                 : undefined
             }

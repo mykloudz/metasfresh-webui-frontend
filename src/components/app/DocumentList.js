@@ -948,6 +948,7 @@ export class DocumentList extends Component {
                   c.getWrappedInstance() &&
                   c.getWrappedInstance().instanceRef)
               }
+              docStatus=""
               rowData={rowDataMap}
               cols={layout.elements}
               collapsible={layout.collapsible}

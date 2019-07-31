@@ -233,7 +233,7 @@ class Window extends PureComponent {
             supportQuickInput={supportQuickInput}
             tabInfo={tabsInfo && tabsInfo[tabId]}
             disconnectFromState={true}
-            docStatus={data.DocStatus.value}
+            docStatus={(windowId == 540581) ? data.DocStatus.value.key : ''}
           />
         );
       }
