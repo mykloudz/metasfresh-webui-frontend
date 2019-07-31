@@ -696,14 +696,23 @@ class Table extends Component {
     return true;
   };
 
-  handleRightClick = (e, id, fieldName, supportZoomInto, supportFieldEdit, isClosed, docStatus) => {
+  handleRightClick = (e, id, fieldName, supportZoomInto, supportFieldEdit) => {
     e.preventDefault();
 
     const { selected } = this.state;
     const { clientX, clientY } = e;
 
     if (selected.indexOf(id) > -1) {
-      if((docStatus != 'IP') || (docStatus == 'IP' && !isClosed)) {  
+      this.setContextMenu(
+        clientX,
+        clientY,
+        fieldName,
+        supportZoomInto,
+        supportFieldEdit
+      );
+    }
+    else {
+      this.selectOneProduct(id, null, null, () => {
         this.setContextMenu(
           clientX,
           clientY,
@@ -711,30 +720,11 @@ class Table extends Component {
           supportZoomInto,
           supportFieldEdit
         );
-      }
-      else {
-        this.selectOneProduct(id, null, null, () => {
-          if((docStatus != 'IP') || (docStatus == 'IP' && !isClosed)) {
-            this.setContextMenu(
-              clientX,
-              clientY,
-              fieldName,
-              supportZoomInto,
-              supportFieldEdit
-            );
-          }
-        });
-      }
+      });
     }
   };
   
-  setContextMenu = (
-    clientX,
-    clientY,
-    fieldName,
-    supportZoomInto,
-    supportFieldEdit
-  ) => {
+  setContextMenu = (clientX, clientY, fieldName, supportZoomInto, supportFieldEdit) => {
     this.setState({
       contextMenu: Object.assign({}, this.state.contextMenu, {
         x: clientX,
@@ -742,7 +732,7 @@ class Table extends Component {
         open: true,
         fieldName,
         supportZoomInto,
-        supportFieldEdit,
+        supportFieldEdit
       }),
     });
   };
@@ -966,8 +956,7 @@ class Table extends Component {
       showIncludedViewOnSelect,
       openIncludedViewOnSelect,
       viewId,
-      supportOpenRecord,
-      docStatus
+      supportOpenRecord
     } = this.props;
 
     const { selected, rows, collapsedRows, collapsedParentsRows } = this.state;
@@ -1039,9 +1028,7 @@ class Table extends Component {
             item[keyProperty],
             fieldName,
             !!supportZoomInto,
-            supportFieldEdit,
-            (windowId == 540581) ? item.fieldsByName.IsClosed.value : false,
-            (windowId == 540581) ? docStatus.key : ''
+            supportFieldEdit
           )
         }
         changeListenOnTrue={() => this.changeListen(true)}
@@ -1122,6 +1109,7 @@ class Table extends Component {
       disablePaginationShortcuts,
       hasIncluded,
       blurOnIncludedView,
+      docStatus,
     } = this.props;
 
     const {
@@ -1132,6 +1120,23 @@ class Table extends Component {
       rows,
       tableRefreshToggle,
     } = this.state;
+
+    var isClosed = false;
+    let _closedRows = rows.filter(row => {
+      if(docStatus != '') {
+        if(row.fieldsByName.isshortclosed.value) {
+          return row;
+        };
+      };
+    });
+
+    if(_closedRows) {
+      _closedRows.forEach(function (row) {
+        if(selected.indexOf(row.rowId) > -1) {
+          isClosed = true;            
+        };
+      });      
+    };
 
     let showPagination = page && pageLength;
     if (currentDevice.type === 'mobile' || currentDevice.type === 'tablet') {
@@ -1168,7 +1173,7 @@ class Table extends Component {
               }
               onOpenNewTab={handleOpenNewTab}
               handleDelete={
-                !isModal && (tabInfo && tabInfo.allowDelete)
+                !isModal && (tabInfo && tabInfo.allowDelete) && ((docStatus != 'IP') || (docStatus == 'IP' && !isClosed))
                   ? this.handleDelete
                   : null
               }
@@ -1303,7 +1308,7 @@ class Table extends Component {
                 : undefined
             }
             handleDelete={
-              selected && selected.length > 0 && selected[0]
+              selected && selected.length > 0 && selected[0] && ((docStatus != 'IP') || (docStatus == 'IP' && !isClosed))
                 ? this.handleDelete
                 : undefined
             }
