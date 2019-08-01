@@ -718,20 +718,7 @@ class Table extends Component {
           clientY,
           fieldName,
           supportZoomInto,
-          supportFieldEdit,
-          isClosed
-        );
-      });
-    }
-    else {
-      this.selectOneProduct(id, null, null, () => {
-        this.setContextMenu(
-          clientX,
-          clientY,
-          fieldName,
-          supportZoomInto,
-          supportFieldEdit,
-          isClosed
+          supportFieldEdit
         );
       });
     }
@@ -1041,13 +1028,7 @@ class Table extends Component {
             item[keyProperty],
             fieldName,
             !!supportZoomInto,
-<<<<<<< HEAD
             supportFieldEdit
-=======
-            supportFieldEdit,
-            (windowId == 540581) ? item.fieldsByName.isshortclosed.value : false,
-            (windowId == 540581) ? docStatus.key : ''
->>>>>>> e2f14e3724e53d0e7fa52185c710868ce7d78b5b
           )
         }
         changeListenOnTrue={() => this.changeListen(true)}
@@ -1192,11 +1173,7 @@ class Table extends Component {
               }
               onOpenNewTab={handleOpenNewTab}
               handleDelete={
-<<<<<<< HEAD
                 !isModal && (tabInfo && tabInfo.allowDelete) && ((docStatus != 'IP') || (docStatus == 'IP' && !isClosed))
-=======
-                !isModal && (tabInfo && tabInfo.allowDelete) && ((docStatus != 'IP') || (docStatus == 'IP' && !contextMenu.isClosed))
->>>>>>> e2f14e3724e53d0e7fa52185c710868ce7d78b5b
                   ? this.handleDelete
                   : null
               }
@@ -1331,11 +1308,7 @@ class Table extends Component {
                 : undefined
             }
             handleDelete={
-<<<<<<< HEAD
               selected && selected.length > 0 && selected[0] && ((docStatus != 'IP') || (docStatus == 'IP' && !isClosed))
-=======
-              selected && selected.length > 0 && selected[0] && ((docStatus != 'IP') || (docStatus == 'IP' && !contextMenu.isClosed))
->>>>>>> e2f14e3724e53d0e7fa52185c710868ce7d78b5b
                 ? this.handleDelete
                 : undefined
             }
