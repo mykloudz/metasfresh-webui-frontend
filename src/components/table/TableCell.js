@@ -11,6 +11,7 @@ import {
   AMOUNT_FIELD_FORMATS_BY_PRECISION,
   SPECIAL_FIELD_TYPES,
   DATE_FIELD_TYPES,
+  TIME_FIELD_TYPES,
   DATE_FIELD_FORMATS,
 } from '../../constants/Constants';
 import WidgetTooltip from '../widget/WidgetTooltip';
@@ -23,12 +24,11 @@ class TableCell extends PureComponent {
       ? AMOUNT_FIELD_FORMATS_BY_PRECISION[precision]
       : null;
 
-  static getDateFormat = fieldType =>
-    DATE_FIELD_FORMATS[fieldType] || DATE_FIELD_FORMATS.Date;
+  static getDateFormat = fieldType => DATE_FIELD_FORMATS[fieldType];
 
   static createDate = (fieldValue, fieldType) =>
     fieldValue
-      ? Moment(new Date(fieldValue)).format(TableCell.getDateFormat(fieldType))
+      ? Moment(fieldValue).format(TableCell.getDateFormat(fieldType))
       : '';
 
   static createAmount = (fieldValue, precision, isGerman) => {
@@ -92,7 +92,8 @@ class TableCell extends PureComponent {
             .join(' - ');
         }
 
-        return DATE_FIELD_TYPES.includes(fieldType)
+        return DATE_FIELD_TYPES.includes(fieldType) ||
+          TIME_FIELD_TYPES.includes(fieldType)
           ? TableCell.createDate(fieldValue, fieldType)
           : fieldValue.caption;
       }
@@ -104,7 +105,10 @@ class TableCell extends PureComponent {
         );
       }
       case 'string': {
-        if (DATE_FIELD_TYPES.includes(fieldType)) {
+        if (
+          DATE_FIELD_TYPES.includes(fieldType) ||
+          TIME_FIELD_TYPES.includes(fieldType)
+        ) {
           return TableCell.createDate(fieldValue, fieldType);
         } else if (AMOUNT_FIELD_TYPES.includes(fieldType)) {
           return TableCell.createAmount(fieldValue, precision, isGerman);
@@ -128,17 +132,14 @@ class TableCell extends PureComponent {
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
-    const { widgetData, updateRow, readonly, rowId } = this.props;
+    const { updateRow, readonly, rowId, tdValue } = this.props;
+    const { tdValue: nextTdValue } = nextProps;
     // We should avoid highlighting when whole row is exchanged (sorting)
     if (rowId !== nextProps.rowId) {
       return;
     }
 
-    if (
-      !readonly &&
-      JSON.stringify(widgetData[0].value) !==
-        JSON.stringify(nextProps.widgetData[0].value)
-    ) {
+    if (!readonly && tdValue !== nextTdValue) {
       updateRow();
     }
   }
@@ -166,18 +167,67 @@ class TableCell extends PureComponent {
     }
   };
 
+  handleKeyDown = e => {
+    const {
+      handleKeyDown,
+      property,
+      item,
+      getWidgetData,
+      isEditable,
+      supportFieldEdit,
+    } = this.props;
+    const widgetData = getWidgetData(item, isEditable, supportFieldEdit);
+
+    handleKeyDown(e, property, widgetData[0]);
+  };
+
+  handleRightClick = e => {
+    const {
+      handleRightClick,
+      property,
+      supportZoomInto,
+      supportFieldEdit,
+      keyProperty,
+    } = this.props;
+
+    handleRightClick(
+      e,
+      keyProperty,
+      property,
+      !!supportZoomInto,
+      supportFieldEdit
+    );
+  };
+
+  onDoubleClick = e => {
+    const {
+      property,
+      item,
+      getWidgetData,
+      isEditable,
+      supportFieldEdit,
+      handleDoubleClick,
+    } = this.props;
+    const widgetData = getWidgetData(item, isEditable, supportFieldEdit);
+
+    if (isEditable) {
+      handleDoubleClick(e, property, true, widgetData[0]);
+    }
+  };
+
   render() {
     const {
       isEdited,
+      isEditable,
+      supportFieldEdit,
       cellExtended,
       extendLongText,
-      widgetData,
+      getWidgetData,
       item,
       windowId,
       rowId,
       tabId,
-      handleDoubleClick,
-      handleKeyDown,
+      property,
       updatedRow,
       tabIndex,
       entity,
@@ -186,7 +236,6 @@ class TableCell extends PureComponent {
       listenOnKeysTrue,
       closeTableField,
       getSizeClass,
-      handleRightClick,
       mainTable,
       onCellChange,
       viewId,
@@ -194,6 +243,8 @@ class TableCell extends PureComponent {
       onClickOutside,
       isGerman,
     } = this.props;
+    const widgetData = getWidgetData(item, isEditable, supportFieldEdit);
+
     const docId = `${this.props.docId}`;
     const { tooltipToggled } = this.state;
     const tdValue = !isEdited
@@ -240,13 +291,22 @@ class TableCell extends PureComponent {
       };
     }
 
+    let entityEffective;
+    if (viewId) {
+      entityEffective = 'documentView';
+    } else if (mainTable) {
+      entityEffective = 'window';
+    } else {
+      entityEffective = entity;
+    }
+
     return (
       <td
         tabIndex={modalVisible ? -1 : tabIndex}
         ref={c => (this.cell = c)}
-        onDoubleClick={handleDoubleClick}
-        onKeyDown={handleKeyDown}
-        onContextMenu={handleRightClick}
+        onDoubleClick={this.onDoubleClick}
+        onKeyDown={this.handleKeyDown}
+        onContextMenu={this.handleRightClick}
         className={classnames(
           {
             [`text-${item.gridAlign}`]: item.gridAlign,
@@ -260,29 +320,33 @@ class TableCell extends PureComponent {
             'pulse-off': !updatedRow,
           }
         )}
+        data-cy={`cell-${property}`}
       >
         {isEdited ? (
           <MasterWidget
             {...item}
-            entity={mainTable ? 'window' : entity}
+            {...{
+              getWidgetData,
+              viewId,
+              rowId,
+              widgetData,
+              closeTableField,
+              isOpenDatePicker,
+              listenOnKeys,
+              listenOnKeysFalse,
+              listenOnKeysTrue,
+              onClickOutside,
+            }}
+            entity={entityEffective}
             dateFormat={isDateField}
             dataId={mainTable ? null : docId}
-            widgetData={widgetData}
             windowType={windowId}
             isMainTable={mainTable}
-            rowId={rowId}
-            viewId={viewId}
             tabId={mainTable ? null : tabId}
             noLabel={true}
             gridAlign={item.gridAlign}
             handleBackdropLock={this.handleBackdropLock}
-            onClickOutside={onClickOutside}
-            listenOnKeys={listenOnKeys}
-            listenOnKeysTrue={listenOnKeysTrue}
-            listenOnKeysFalse={listenOnKeysFalse}
             onChange={mainTable ? onCellChange : null}
-            closeTableField={closeTableField}
-            isOpenDatePicker={isOpenDatePicker}
             ref={c => {
               this.widget = c && c.getWrappedInstance();
             }}
@@ -315,8 +379,11 @@ class TableCell extends PureComponent {
 }
 
 TableCell.propTypes = {
+  isEditable: PropTypes.bool,
   cellExtended: PropTypes.bool,
   extendLongText: PropTypes.number,
+  property: PropTypes.string,
+  getWidgetData: PropTypes.func,
   handleRightClick: PropTypes.func,
   handleKeyDown: PropTypes.func,
   handleDoubleClick: PropTypes.func,
@@ -329,5 +396,7 @@ TableCell.propTypes = {
 
 export default connect(state => ({
   modalVisible: state.windowHandler.modal.visible,
-  isGerman: state.appHandler.me.language.key.includes('de'),
+  isGerman: state.appHandler.me.language
+    ? state.appHandler.me.language.key.includes('de')
+    : false,
 }))(TableCell);

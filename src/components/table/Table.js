@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import classnames from 'classnames';
 import currentDevice from 'current-device';
 import counterpart from 'counterpart';
+import uuid from 'uuid/v4';
 
 import { deleteRequest } from '../../actions/GenericActions';
 import {
@@ -175,10 +176,10 @@ class Table extends Component {
   }
 
   showSelectedIncludedView = selected => {
-    const { showIncludedViewOnSelect } = this.props;
+    const { showIncludedViewOnSelect, openIncludedViewOnSelect } = this.props;
     const { rows } = this.state;
 
-    if (selected.length === 1) {
+    if (openIncludedViewOnSelect && selected.length === 1) {
       rows.forEach(item => {
         if (item.id === selected[0]) {
           showIncludedViewOnSelect({
@@ -257,7 +258,9 @@ class Table extends Component {
             }
           });
 
-          const updatedState = {};
+          const updatedState = {
+            dataHash: uuid(),
+          };
 
           if (mapCollapsed.length) {
             updatedState.collapsedArrayMap = mapCollapsed;
@@ -282,6 +285,7 @@ class Table extends Component {
 
       this.setState({
         rows: rowsData,
+        dataHash: uuid(),
         pendingInit: !rowData.get(`${tabId}`),
       });
     }
@@ -655,9 +659,15 @@ class Table extends Component {
     }
   };
 
-  handleClick = (e, keyProperty, item) => {
-    const { onSelectionChanged } = this.props;
+  handleClick = (e, item) => {
+    const {
+      onSelectionChanged,
+      openIncludedViewOnSelect,
+      showIncludedViewOnSelect,
+      keyProperty,
+    } = this.props;
     const id = item[keyProperty];
+    let selectionValue = false;
 
     if (e.button === 0) {
       const { selected } = this.state;
@@ -691,9 +701,20 @@ class Table extends Component {
         onSelectionChanged(newSelection);
       }
 
-      return newSelection.length > 0;
+      selectionValue = newSelection.length > 0;
     }
-    return true;
+    selectionValue = true;
+
+    if (openIncludedViewOnSelect) {
+      showIncludedViewOnSelect({
+        showIncludedView: selectionValue && item.supportIncludedViews,
+        forceClose: !selectionValue,
+        windowType: item.supportIncludedViews
+          ? item.includedView.windowType || item.includedView.windowId
+          : null,
+        viewId: item.supportIncludedViews ? item.includedView.viewId : '',
+      });
+    }
   };
 
   handleRightClick = (e, id, fieldName, supportZoomInto, supportFieldEdit) => {
@@ -953,13 +974,18 @@ class Table extends Component {
       entity,
       indentSupported,
       collapsible,
-      showIncludedViewOnSelect,
-      openIncludedViewOnSelect,
       viewId,
-      supportOpenRecord
+      supportOpenRecord,
+      focusOnFieldName,
     } = this.props;
 
-    const { selected, rows, collapsedRows, collapsedParentsRows } = this.state;
+    const {
+      selected,
+      rows,
+      collapsedRows,
+      collapsedParentsRows,
+      dataHash,
+    } = this.state;
 
     if (!rows || !rows.length) return null;
 
@@ -992,8 +1018,11 @@ class Table extends Component {
           collapsible,
           viewId,
           supportOpenRecord,
+          item,
+          focusOnFieldName,
         }}
-        key={`${i}-${docId}`}
+        dataHash={dataHash}
+        key={`${i}-${viewId}`}
         collapsed={
           collapsedParentsRows &&
           collapsedParentsRows.indexOf(item[keyProperty]) > -1
@@ -1005,38 +1034,20 @@ class Table extends Component {
             this.rowRefs[keyProp] = c.wrappedInstance;
           }
         }}
+        keyProperty={item[keyProperty]}
         rowId={item[keyProperty]}
         tabId={tabId}
         onDoubleClick={this.handleDoubleClick}
-        onClick={e => {
-          const selected = this.handleClick(e, keyProperty, item);
-
-          if (openIncludedViewOnSelect) {
-            showIncludedViewOnSelect({
-              showIncludedView: selected && item.supportIncludedViews,
-              forceClose: !selected,
-              windowType: item.supportIncludedViews
-                ? item.includedView.windowType || item.includedView.windowId
-                : null,
-              viewId: item.supportIncludedViews ? item.includedView.viewId : '',
-            });
-          }
-        }}
-        handleRightClick={(e, fieldName, supportZoomInto, supportFieldEdit) =>
-          this.handleRightClick(
-            e,
-            item[keyProperty],
-            fieldName,
-            !!supportZoomInto,
-            supportFieldEdit
-          )
-        }
+        onClick={this.handleClick}
+        handleRightClick={this.handleRightClick}
         changeListenOnTrue={() => this.changeListen(true)}
         changeListenOnFalse={() => this.changeListen(false)}
         newRow={i === rows.length - 1 ? newRow : false}
         isSelected={
-          selected &&
-          (selected.indexOf(item[keyProperty]) > -1 || selected[0] === 'all')
+          (selected &&
+            (selected.indexOf(item[keyProperty]) > -1 ||
+              selected[0] === 'all')) ||
+          (selected && !selected[0] && focusOnFieldName && i === 0)
         }
         handleSelect={this.selectRangeProduct}
         contextType={item.type}
@@ -1109,7 +1120,11 @@ class Table extends Component {
       disablePaginationShortcuts,
       hasIncluded,
       blurOnIncludedView,
+<<<<<<< HEAD
       docStatus,
+=======
+      toggleState,
+>>>>>>> upstream/release
     } = this.props;
 
     const {
@@ -1144,9 +1159,16 @@ class Table extends Component {
     }
 
     return (
-      <div ref={ref => (this.wrapper = ref)} className="table-flex-wrapper">
+      <div
+        ref={ref => (this.wrapper = ref)}
+        className={classnames('table-flex-wrapper', {
+          'col-12': toggleState === 'grid' || toggleState == null,
+          'col-6': toggleState === 'all',
+          'd-none': toggleState === 'map',
+        })}
+      >
         <div
-          className={classnames('table-flex-wrapper', {
+          className={classnames({
             'table-flex-wrapper-row': mainTable,
           })}
         >
@@ -1181,27 +1203,23 @@ class Table extends Component {
             />
           )}
           {!readonly && (
-            <div className="row">
-              <div className="col-12">
-                <TableFilter
-                  openModal={() => this.openModal(windowId, tabId, 'NEW')}
-                  {...{
-                    toggleFullScreen,
-                    fullScreen,
-                    docId,
-                    tabIndex,
-                    isBatchEntry,
-                    supportQuickInput,
-                    selected,
-                  }}
-                  docType={windowId}
-                  tabId={tabId}
-                  handleBatchEntryToggle={this.handleBatchEntryToggle}
-                  allowCreateNew={tabInfo && tabInfo.allowCreateNew}
-                  wrapperHeight={this.wrapper && this.wrapper.offsetHeight}
-                />
-              </div>
-            </div>
+            <TableFilter
+              openModal={() => this.openModal(windowId, tabId, 'NEW')}
+              {...{
+                toggleFullScreen,
+                fullScreen,
+                docId,
+                tabIndex,
+                isBatchEntry,
+                supportQuickInput,
+                selected,
+              }}
+              docType={windowId}
+              tabId={tabId}
+              handleBatchEntryToggle={this.handleBatchEntryToggle}
+              allowCreateNew={tabInfo && tabInfo.allowCreateNew}
+              wrapperHeight={this.wrapper && this.wrapper.offsetHeight}
+            />
           )}
 
           <div

@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import { push } from 'react-router-redux';
 import { Map } from 'immutable';
-import Moment from 'moment';
-import { DateTime } from 'luxon';
-// import { isLuxonObject } from './index';
+import Moment from 'moment-timezone';
+import currentDevice from 'current-device';
+
 import { getItemsByProperty, nullToEmptyStrings } from './index';
 import { getSelection, getSelectionInstant } from '../reducers/windowHandler';
 
@@ -55,6 +55,12 @@ const DLmapStateToProps = (state, props) => ({
 const NO_SELECTION = [];
 const NO_VIEW = {};
 const PANEL_WIDTHS = ['1', '.2', '4'];
+const GEO_PANEL_STATES = ['grid', 'all', 'map'];
+
+// for mobile devices we only want to show either map or grid
+if (currentDevice.type === 'mobile' || currentDevice.type === 'tablet') {
+  GEO_PANEL_STATES.splice(1, 1);
+}
 
 const filtersToMap = function(filtersArray) {
   let filtersMap = Map();
@@ -113,6 +119,7 @@ export {
   NO_SELECTION,
   NO_VIEW,
   PANEL_WIDTHS,
+  GEO_PANEL_STATES,
   getSortingQuery,
   redirectToNewDocument,
   filtersToMap,
@@ -250,41 +257,29 @@ export function parseToDisplay(fieldsByName) {
   return parseDateToReadable(nullToEmptyStrings(fieldsByName));
 }
 
-// i.e 2018-01-27T17:00:00.000-06:00
-export function parseDateWithCurrenTimezone(value) {
+// This doesn't set the TZ anymore, as we're handling this globally/in datepicker
+export function parseDateWithCurrentTimezone(value) {
   if (value) {
-    let luxonOffset = 0;
-
-    if (!Moment.isMoment(value)) {
-      if (value instanceof Date) {
-        luxonOffset = DateTime.fromISO(value.toISOString()).offset;
-      } else {
-        luxonOffset = DateTime.fromISO(value).offset;
-      }
-
-      value = Moment(value);
-    } else {
-      luxonOffset = DateTime.fromISO(value.toISOString()).offset;
+    if (Moment.isMoment(value)) {
+      return value;
     }
-
-    value.utcOffset(luxonOffset);
-
-    return value;
+    return Moment(value);
   }
   return '';
 }
 
 function parseDateToReadable(fieldsByName) {
-  const dateParse = ['Date', 'DateTime', 'Time'];
+  const dateParse = ['Date', 'ZonedDateTime', 'Time', 'Timestamp'];
 
   return Object.keys(fieldsByName).reduce((acc, fieldName) => {
     const field = fieldsByName[fieldName];
     const isDateField = dateParse.indexOf(field.widgetType) > -1;
+
     acc[fieldName] =
       isDateField && field.value
         ? {
             ...field,
-            value: parseDateWithCurrenTimezone(field.value),
+            value: parseDateWithCurrentTimezone(field.value),
           }
         : field;
     return acc;

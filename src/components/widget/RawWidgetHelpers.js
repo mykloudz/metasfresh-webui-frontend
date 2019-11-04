@@ -1,21 +1,41 @@
-import Moment from 'moment';
+import Moment from 'moment-timezone';
+import cx from 'classnames';
 
-import { DATE_FORMAT } from '../../constants/Constants';
+import {
+  DATE_FORMAT,
+  TIME_FORMAT,
+  DATE_TIMEZONE_FORMAT,
+} from '../../constants/Constants';
 
-export function generateMomentObj(value) {
-  if (Moment.isMoment(value)) {
-    return value;
+/*
+ * Helper function returning proper date field formatting depending on the
+ * given widget type
+ *
+ * @param {string} widgetType
+ * @return {string} format
+ */
+export function getFormatForDateField(widgetType) {
+  let fmt = DATE_TIMEZONE_FORMAT;
+  if (widgetType === `Date`) {
+    fmt = DATE_FORMAT;
+  } else if (widgetType === `Time`) {
+    fmt = TIME_FORMAT;
   }
-  return value ? Moment(value).format(DATE_FORMAT) : null;
+
+  return fmt;
 }
 
-// TODO: No idea why somebody decided to reimplement classnames instead
-// of using module. Need to check if it can be easily replaced.
-function classNames(classObject) {
-  return Object.entries(classObject)
-    .filter(([, classActive]) => classActive)
-    .map(([className]) => className)
-    .join(' ');
+/*
+ * Helper function to turn date value into a Moment object and optionally format it.
+ *
+ * @param {object} value
+ * @param {string} [FORMAT]
+ */
+export function generateMomentObj(value, FORMAT) {
+  if (Moment.isMoment(value)) {
+    return value.format(FORMAT);
+  }
+  return value ? Moment(value).format(FORMAT) : null;
 }
 
 export function getClassNames({ icon, forcedPrimary } = {}) {
@@ -23,8 +43,7 @@ export function getClassNames({ icon, forcedPrimary } = {}) {
   const { isEdited } = this.state;
   const { readonly, value, mandatory, validStatus } = widgetData[0];
 
-  const ret = classNames({
-    'input-block': true,
+  const ret = cx(`input-block`, {
     'input-icon-container': icon,
     'input-disabled': readonly,
     'input-mandatory': mandatory && (value ? value.length === 0 : value !== 0),

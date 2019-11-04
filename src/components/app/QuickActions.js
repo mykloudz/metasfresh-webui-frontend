@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Queue from 'simple-promise-queue';
+import cx from 'classnames';
 
 import { quickActionsRequest } from '../../api';
 import { openModal } from '../../actions/WindowActions';
@@ -19,26 +20,12 @@ const initialState = {
   loading: false,
 };
 
+/**
+ * @file Class based component.
+ * @module QuickActions
+ * @extends Component
+ */
 export class QuickActions extends Component {
-  static propTypes = {
-    // from @connect
-    dispatch: PropTypes.func.isRequired,
-
-    // from <DocumentList>
-    childView: PropTypes.object.isRequired,
-    parentView: PropTypes.object.isRequired,
-    windowType: PropTypes.string.isRequired,
-    viewId: PropTypes.string,
-    viewProfileId: PropTypes.string,
-    fetchOnInit: PropTypes.bool,
-    inBackground: PropTypes.bool,
-    inModal: PropTypes.bool,
-    disabled: PropTypes.bool,
-    stopShortcutPropagation: PropTypes.bool,
-
-    processStatus: PropTypes.string,
-  };
-
   mounted = false;
 
   constructor(props) {
@@ -53,6 +40,11 @@ export class QuickActions extends Component {
     });
   }
 
+  /**
+   * @method componentDidMount
+   * @summary ToDo: Describe the method
+   * @todo Write the documentation
+   */
   componentDidMount = () => {
     this.mounted = true;
 
@@ -82,10 +74,21 @@ export class QuickActions extends Component {
     }
   };
 
+  /**
+   * @method componentWillUnmount
+   * @summary ToDo: Describe the method
+   * @todo Write the documentation
+   */
   componentWillUnmount = () => {
     this.mounted = false;
   };
 
+  /**
+   * @method UNSAFE_componentWillReceiveProps
+   * @summary ToDo: Describe the method
+   * @param {*} nextProps
+   * @todo Write the documentation
+   */
   UNSAFE_componentWillReceiveProps = nextProps => {
     const { selected, viewId, windowType } = this.props;
 
@@ -110,10 +113,22 @@ export class QuickActions extends Component {
     }
   };
 
+  /**
+   * @method shouldComponentUpdate
+   * @summary ToDo: Describe the method
+   * @param {*} nextProps
+   * @todo Write the documentation
+   */
   shouldComponentUpdate(nextProps) {
     return nextProps.shouldNotUpdate !== true;
   }
 
+  /**
+   * @method componentDidUpdate
+   * @summary ToDo: Describe the method
+   * @param {*} prevProps
+   * @todo Write the documentation
+   */
   componentDidUpdate = prevProps => {
     const { inBackground, inModal } = this.props;
 
@@ -132,6 +147,12 @@ export class QuickActions extends Component {
     }
   };
 
+  /**
+   * @method updateActions
+   * @summary ToDo: Describe the method
+   * @param {*} childSelection
+   * @todo Write the documentation
+   */
   updateActions = (childSelection = this.props.childView.viewSelectedIds) => {
     const {
       windowType,
@@ -156,10 +177,21 @@ export class QuickActions extends Component {
     });
   };
 
+  /**
+   * @method handleClickOPutside
+   * @summary ToDo: Describe the method
+   * @todo Write the documentation
+   */
   handleClickOutside = () => {
     this.toggleDropdown();
   };
 
+  /**
+   * @method handleClick
+   * @summary ToDo: Describe the method
+   * @param {*} action
+   * @todo Write the documentation
+   */
   handleClick = action => {
     const { dispatch, viewId, selected, childView, parentView } = this.props;
 
@@ -193,6 +225,20 @@ export class QuickActions extends Component {
     this.toggleDropdown();
   };
 
+  /**
+   * @async
+   * @method renderCancelButton
+   * @summary ToDo: Describe the method
+   * @param {*} windowId
+   * @param {*} viewId
+   * @param {*} viewProfileId
+   * @param {*} selected
+   * @param {*} childView
+   * @param {*} parentView
+   * @param {*} resolve
+   * @param {*} reject
+   * @todo Write the documentation
+   */
   async fetchActions(
     windowId,
     viewId,
@@ -204,7 +250,7 @@ export class QuickActions extends Component {
     reject
   ) {
     if (!this.mounted) {
-      resolve();
+      return resolve();
     }
 
     if (windowId && viewId && childView && parentView) {
@@ -217,44 +263,68 @@ export class QuickActions extends Component {
         parentView
       )
         .then(response => {
-          return this.setState(
-            {
-              actions: response.data.actions,
-              loading: false,
-            },
-            () => resolve()
-          );
+          if (this.mounted) {
+            return this.setState(
+              {
+                actions: response.data.actions,
+                loading: false,
+              },
+              () => resolve()
+            );
+          }
         })
         .catch(() => {
-          return this.setState(
-            {
-              loading: false,
-            },
-            () => reject()
-          );
+          if (this.mounted) {
+            return this.setState(
+              {
+                loading: false,
+              },
+              () => reject()
+            );
+          }
         });
     } else {
-      return this.setState(
-        {
-          loading: false,
-        },
-        () => resolve()
-      );
+      if (this.mounted) {
+        return this.setState(
+          {
+            loading: false,
+          },
+          () => resolve()
+        );
+      }
     }
   }
 
+  /**
+   * @method toggleDropdown
+   * @summary ToDo: Describe the method
+   * @param {*} option
+   * @todo Write the documentation
+   */
   toggleDropdown = option => {
     this.setState({
       isDropdownOpen: option,
     });
   };
 
+  /**
+   * @method toggleTooltip
+   * @summary ToDo: Describe the method
+   * @param {*} type
+   * @param {*} visible
+   * @todo Write the documentation
+   */
   toggleTooltip = (type, visible) => {
     this.setState({
       [type]: visible,
     });
   };
 
+  /**
+   * @method render
+   * @summary ToDo: Describe the method
+   * @todo Write the documentation
+   */
   render() {
     const {
       actions,
@@ -263,12 +333,16 @@ export class QuickActions extends Component {
       listTooltip,
       loading,
     } = this.state;
-    const { shouldNotUpdate, processStatus, disabled } = this.props;
+    const { shouldNotUpdate, processStatus, disabled, className } = this.props;
     const disabledDuringProcessing = processStatus === 'pending' || loading;
 
     if (actions.length) {
       return (
-        <div className={'js-not-unselect ' + (disabled ? 'disabled ' : '')}>
+        <div
+          className={cx(className, 'js-not-unselect ', {
+            disabled: disabled,
+          })}
+        >
           <span className="action-label spacer-right">
             {counterpart.translate('window.quickActions.caption')}:
           </span>
@@ -344,6 +418,43 @@ export class QuickActions extends Component {
     }
   }
 }
+
+/**
+ * @typedef {object} Props Component props
+ * @prop {func} dispatch
+ * @prop {object} childView
+ * @prop {string} windowType
+ * @prop {string} [viewId]
+ * @prop {string} [viewProfileId]
+ * @prop {bool} [fetchOnInit]
+ * @prop {bool} [inBackground]
+ * @prop {bool} [inModal]
+ * @prop {bool} [disabled]
+ * @prop {bool} [stopShortcutPropagation]
+ * @prop {string} [processStatus]
+ * @prop {string} [shouldNotUpdate]
+ * @prop {string} [selected]
+ * @todo Check title, buttons. Which proptype? Required or optional?
+ */
+QuickActions.propTypes = {
+  // from @connect
+  dispatch: PropTypes.func.isRequired,
+
+  // from <DocumentList>
+  childView: PropTypes.object.isRequired,
+  parentView: PropTypes.object.isRequired,
+  windowType: PropTypes.string.isRequired,
+  viewId: PropTypes.string,
+  viewProfileId: PropTypes.string,
+  fetchOnInit: PropTypes.bool,
+  inBackground: PropTypes.bool,
+  inModal: PropTypes.bool,
+  disabled: PropTypes.bool,
+  stopShortcutPropagation: PropTypes.bool,
+  processStatus: PropTypes.string,
+  shouldNotUpdate: PropTypes.any,
+  selected: PropTypes.any,
+};
 
 export default connect(
   false,

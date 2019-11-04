@@ -57,6 +57,20 @@ input {
     &.instruction-sent {
         white-space: normal;
     }
+
+    &.input-zoom {
+        display: flex;
+        align-items: center;
+
+        @media (min-width: $breakpoint-md){
+            /*margin: 0 15px;*/
+        }       
+    }
+
+    &.zoom-into:hover, .zoom-into:hover {
+        text-decoration: underline;
+        cursor: pointer;
+    }
 }
 
 .form-group {
@@ -94,21 +108,37 @@ input {
 }
 
 .form-flex-align {
-    display: flex;
     flex-wrap: nowrap;
     justify-content: space-between;
-    margin-bottom: .5rem;
+    margin-bottom: 15px;
     align-items: center;
+    position: relative;
 
-    flex:1;
-}
+    > .row {
+        margin-top: 15px;
+    }
 
-.form-flex-align > *:not(:last-child){
-    margin-right: .5rem;
-}
+    input {
+        flex: 2 1 auto;
+    }
 
-.form-flex-align input {
-    flex: 2 1 auto;
+    @media (min-width: $breakpoint-sm){
+        > .row {
+            margin-top: 0;
+        }
+    }
+
+    @media (min-width: $breakpoint-lg){
+        padding-top: 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    @media (min-width: $breakpoint-xl){
+        flex-direction: row;
+        align-items: center;
+    }
 }
 
 .form-group-table {
@@ -348,6 +378,7 @@ input:checked + .input-slider:before {
     &.input-mandatory {
         border: 2px solid $brand-mandatory-color !important;
         padding-right: .37rem;
+        border-radius: 3px;
     }
 }
 
@@ -466,9 +497,6 @@ input:checked + .input-slider:before {
     .input-dropdown-container .input-dropdown{
         flex-direction: column;
     }
-    .input-dropdown .input-icon {
-        top: -9px;
-    }
     .input-editable {
         flex: 1 1 50%;
         flex-shrink: 1;
@@ -521,7 +549,6 @@ input:checked + .input-slider:before {
     cursor: pointer;
     min-width: 200px;
     padding: .125rem .5rem;
-    border-radius: 3px;
 
     &:focus {
         outline-width: 0;
@@ -537,6 +564,7 @@ input:checked + .input-slider:before {
 
         &.input-mandatory {
             border: 2px solid $brand-mandatory-color;
+            border-radius: 3px;
         }
 
         &.focused {
@@ -725,10 +753,6 @@ input[type=checkbox]:disabled, input[type=radio]:disabled {
     justify-content: space-between;
 }
 
-.input-secondary .lookup-widget-wrapper {
-    padding: .1rem .50rem;
-}
-
 .lookup-wrapper {
     display: flex;
     padding: 0;
@@ -765,9 +789,6 @@ input[type=checkbox]:disabled, input[type=radio]:disabled {
     padding: 0;
     flex: 1;
 
-    &.focused {
-    }
-
     &.input-icon {
         flex: 0.05;
         justify-content: flex-end;
@@ -783,18 +804,18 @@ input[type=checkbox]:disabled, input[type=radio]:disabled {
         }
     }
 
-    > .input-dropdown {
-        padding: .3rem .5rem;
-    }
-
     .input-dropdown-container  {
         width: 100%;
         min-width: 0;
         padding: .3rem .5rem;
     }
 
+    > .input-dropdown {
+        padding: .3rem .5rem;
+    }
+
     .input-field {
-        padding-top: 2px;
+        /*padding-top: 2px;*/
         padding-bottom: 0;
     }
 }
@@ -861,27 +882,21 @@ input[type=checkbox]:disabled, input[type=radio]:disabled {
     width: 450px;
 }
 
-.quick-input-container {
-    display: flex;
-    align-items: center;
-    flex-direction: row;
-    flex:1;
-
-     > * {
-        margin:0;
-        flex:2;
+/* Others */
+.number-field {
+    input::-webkit-outer-spin-button {
+      -webkit-appearance: none;
     }
 
-     .hint {
-        flex:1;
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
     }
-
-     > *:first-of-type {
-        flex:8;
+    input[type="number"] {
+        -moz-appearance: textfield;
     }
 }
-
-/* Others */
 
 .tagsinput {
 }

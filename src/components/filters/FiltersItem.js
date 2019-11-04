@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import TetherComponent from 'react-tether';
 import ReactDOM from 'react-dom';
 import _ from 'lodash';
+import Moment from 'moment-timezone';
 
 import keymap from '../../shortcuts/keymap';
 import OverlayField from '../app/OverlayField';
@@ -12,8 +13,14 @@ import ModalContextShortcuts from '../keyshortcuts/ModalContextShortcuts';
 import Tooltips from '../tooltips/Tooltips.js';
 import RawWidget from '../widget/RawWidget';
 import { openFilterBox, closeFilterBox } from '../../actions/WindowActions';
-import { parseDateWithCurrenTimezone } from '../../utils/documentListHelper';
-import { DATE_FIELDS } from '../../constants/Constants';
+import { parseDateWithCurrentTimezone } from '../../utils/documentListHelper';
+import { DATE_FIELDS, DATE_FIELD_FORMATS } from '../../constants/Constants';
+
+/**
+ * @file Class based component.
+ * @module FiltersItem
+ * @extends Component
+ */
 class FiltersItem extends Component {
   constructor(props) {
     super(props);
@@ -33,10 +40,21 @@ class FiltersItem extends Component {
     };
   }
 
+  /**
+   * @method UNSAFE_componentWillMount
+   * @summary ToDo: Describe the method
+   * @todo Write the documentation
+   */
   UNSAFE_componentWillMount() {
     this.init();
   }
 
+  /**
+   * @method UNSAFE_componentWillReceiveProps
+   * @summary ToDo: Describe the method
+   * @param {*} props
+   * @todo Write the documentation
+   */
   UNSAFE_componentWillReceiveProps(props) {
     const { active } = this.props;
 
@@ -45,6 +63,11 @@ class FiltersItem extends Component {
     }
   }
 
+  /**
+   * @method componentDidMount
+   * @summary ToDo: Describe the method
+   * @todo Write the documentation
+   */
   componentDidMount() {
     if (this.widgetsContainer) {
       this.widgetsContainer.addEventListener('scroll', this.handleScroll);
@@ -79,6 +102,11 @@ class FiltersItem extends Component {
     }
   }
 
+  /**
+   * @method componentWillUnmount
+   * @summary ToDo: Describe the method
+   * @todo Write the documentation
+   */
   componentWillUnmount() {
     const { dispatch } = this.props;
 
@@ -126,6 +154,17 @@ class FiltersItem extends Component {
     }
   };
 
+  /**
+   * @method setValue
+   * @summary ToDo: Describe the method
+   * @param {*} property
+   * @param {*} value
+   * @param {*} id
+   * @param {*} valueTo
+   * @param {*} filterId
+   * @param {*} defaultValue
+   * @todo Write the documentation
+   */
   setValue = (property, value, id, valueTo = '', filterId, defaultValue) => {
     const { resetInitialValues } = this.props;
 
@@ -155,16 +194,25 @@ class FiltersItem extends Component {
     }
   };
 
-  // TODO: Fix the timezone issue
-  // Right now, it's ignoring the returning timezone from back-end
-  // and use the browser's default timezone
+  /**
+   * @method parseDateToReadable
+   * @summary ToDo: Describe the method
+   * @param {*} widgetType
+   * @param {*} value
+   * @todo Write the documentation
+   */
   parseDateToReadable = (widgetType, value) => {
     if (DATE_FIELDS.indexOf(widgetType) > -1) {
-      return parseDateWithCurrenTimezone(value);
+      return parseDateWithCurrentTimezone(value, widgetType);
     }
     return value;
   };
 
+  /**
+   * @method mergeData
+   * @summary ToDo: Describe the method
+   * @todo Write the documentation
+   */
   mergeData = (
     property,
     value,
@@ -242,6 +290,11 @@ class FiltersItem extends Component {
     }));
   };
 
+  /**
+   * @method handleScroll
+   * @summary ToDo: Describe the method
+   * @todo Write the documentation
+   */
   handleScroll = () => {
     const { dispatch } = this.props;
     const {
@@ -254,6 +307,11 @@ class FiltersItem extends Component {
     dispatch(openFilterBox({ top, left, bottom, right }));
   };
 
+  /**
+   * @method handleApply
+   * @summary ToDo: Describe the method
+   * @todo Write the documentation
+   */
   handleApply = () => {
     const { applyFilters, closeFilterMenu, returnBackToDropdown } = this.props;
     const { filter, activeFilter } = this.state;
@@ -286,6 +344,11 @@ class FiltersItem extends Component {
     }
   };
 
+  /**
+   * @method handleClear
+   * @summary ToDo: Describe the method
+   * @todo Write the documentation
+   */
   handleClear = () => {
     const {
       clearFilters,
@@ -301,12 +364,23 @@ class FiltersItem extends Component {
     returnBackToDropdown && returnBackToDropdown();
   };
 
+  /**
+   * @method toggleTooltip
+   * @summary ToDo: Describe the method
+   * @param {*} visible
+   * @todo Write the documentation
+   */
   toggleTooltip = visible => {
     this.setState({
       isTooltipShow: visible,
     });
   };
 
+  /**
+   * @method render
+   * @summary ToDo: Describe the method
+   * @todo Write the documentation
+   */
   render() {
     const {
       data,
@@ -372,7 +446,7 @@ class FiltersItem extends Component {
               <div className="col-sm-12">
                 {filter.parameters &&
                   filter.parameters.map((item, index) => {
-                    // item.field = data.filterId;
+                    const { widgetType } = item;
                     item.field = item.parameterName;
 
                     return (
@@ -390,16 +464,22 @@ class FiltersItem extends Component {
                             item.defaultValue
                           )
                         }
-                        handleChange={(property, value, id, valueTo) =>
-                          this.setValue(
-                            property,
-                            value,
-                            id,
-                            valueTo,
-                            filter.filterId,
-                            item.defaultValue
-                          )
-                        }
+                        handleChange={(property, value, id, valueTo) => {
+                          if (
+                            (DATE_FIELD_FORMATS[widgetType] &&
+                              Moment.isMoment(value)) ||
+                            !DATE_FIELD_FORMATS[widgetType]
+                          ) {
+                            this.setValue(
+                              property,
+                              value,
+                              id,
+                              valueTo,
+                              filter.filterId,
+                              item.defaultValue
+                            );
+                          }
+                        }}
                         widgetType={item.widgetType}
                         fields={[item]}
                         type={item.type}
@@ -475,6 +555,29 @@ class FiltersItem extends Component {
   }
 }
 
+/**
+ * @typedef {object} Props Component props
+ * @prop {func} dispatch
+ * @prop {func} applyFilters
+ * @prop {func} [resetInitialValues]
+ * @prop {func} [clearFilters]
+ * @prop {*} [filterWrapper]
+ * @prop {string} [panelCaption]
+ * @prop {array} [active]
+ * @prop {*} data
+ * @prop {*} notValidFields
+ * @prop {*} isActive
+ * @prop {*} windowType
+ * @prop {*} onShow
+ * @prop {*} onHide
+ * @prop {*} viewId
+ * @prop {*} outsideClick
+ * @prop {*} closeFilterMenu
+ * @prop {*} captionValue
+ * @prop {*} openedFilter
+ * @prop {*} returnBackToDropdown
+ * @todo Check props. Which proptype? Required or optional?
+ */
 FiltersItem.propTypes = {
   dispatch: PropTypes.func.isRequired,
   applyFilters: PropTypes.func.isRequired,
@@ -483,6 +586,18 @@ FiltersItem.propTypes = {
   filtersWrapper: PropTypes.any,
   panelCaption: PropTypes.string,
   active: PropTypes.array,
+  data: PropTypes.any,
+  notValidFields: PropTypes.any,
+  isActive: PropTypes.any,
+  windowType: PropTypes.any,
+  onShow: PropTypes.any,
+  onHide: PropTypes.any,
+  viewId: PropTypes.any,
+  outsideClick: PropTypes.any,
+  closeFilterMenu: PropTypes.any,
+  captionValue: PropTypes.any,
+  openedFilter: PropTypes.any,
+  returnBackToDropdown: PropTypes.any,
 };
 
 export default connect()(FiltersItem);

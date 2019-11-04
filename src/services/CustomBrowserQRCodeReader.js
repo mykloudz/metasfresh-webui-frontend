@@ -4,13 +4,16 @@ import Timer from 'timer-machine';
 class ScannerError extends Error {}
 
 /**
- *
- * QR Code reader to use from browser.
+ * @file QR Code reader to use from browser.
+ * @module CustomBrowserQRCodeReader
+ * @extends BrowserQRCodeReader
  */
 export default class CustomBrowserQRCodeReader extends BrowserQRCodeReader {
   /**
    * Extend the built-in method. Throw a custom error when QR code not found during
    * the timeout time.
+   * @method readerDecode
+   * @param {*} binaryBitmap
    */
   readerDecode(binaryBitmap) {
     if (!this.timer) {
@@ -23,6 +26,6 @@ export default class CustomBrowserQRCodeReader extends BrowserQRCodeReader {
     }
 
     this.timer.destroy();
-    throw new ScannerError('No QR Code found. Fall back to barcode scanner');
+    throw new ScannerError('No QR Code found.');
   }
 }

@@ -1,11 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import Moment from 'moment';
+import Moment from 'moment-timezone';
 
 import * as windowActions from '../../actions/WindowActions';
 import RawWidget from './RawWidget';
-import { DATE_FIELDS, DATE_FORMAT } from '../../constants/Constants';
 
 function isNumberField(widgetType) {
   switch (widgetType) {
@@ -18,6 +17,13 @@ function isNumberField(widgetType) {
   }
 }
 
+const dateParse = ['Date', 'DateTime', 'ZonedDateTime', 'Timestamp', 'Time'];
+
+/**
+ * @file Class based component.
+ * @module MasterWidget
+ * @extends Component
+ */
 class MasterWidget extends Component {
   state = {
     updated: false,
@@ -25,6 +31,10 @@ class MasterWidget extends Component {
     data: '',
   };
 
+  /**
+   * @method componentDidMount
+   * @summary ToDo: Describe the method.
+   */
   componentDidMount() {
     const { data, widgetData } = this.props;
 
@@ -33,55 +43,58 @@ class MasterWidget extends Component {
     });
   }
 
+  /**
+   * @method UNSAFE_componentWillReceiveProps
+   * @summary ToDo: Describe the method.
+   * @param {*} nextProps
+   */
   UNSAFE_componentWillReceiveProps(nextProps) {
-    const { widgetData } = this.props;
+    const { widgetData, widgetType } = this.props;
     const { edited, data } = this.state;
+    let next = nextProps.widgetData[0].value;
 
     if (
       !edited &&
-      JSON.stringify(nextProps.widgetData[0].value) !== data &&
-      JSON.stringify(widgetData[0].value) !==
-        JSON.stringify(nextProps.widgetData[0].value)
+      JSON.stringify(next) !== data &&
+      JSON.stringify(widgetData[0].value) !== JSON.stringify(next)
     ) {
-      this.setState({
-        data: nextProps.widgetData[0].value,
-      });
-
-      if (!edited) {
-        this.setState(
-          {
-            updated: true,
-          },
-          () => {
-            this.timeout = setTimeout(() => {
-              this.setState({
-                updated: false,
-              });
-            }, 1000);
-          }
-        );
-      } else {
-        this.setState({
-          edited: false,
-        });
+      if (dateParse.includes(widgetType) && !Moment.isMoment(next)) {
+        next = Moment(next);
       }
+      this.setState(
+        {
+          updated: true,
+          data: next,
+        },
+        () => {
+          this.timeout = setTimeout(() => {
+            this.setState({
+              updated: false,
+            });
+          }, 1000);
+        }
+      );
+    } else if (edited) {
+      this.setState({
+        edited: false,
+      });
     }
   }
 
+  /**
+   * @method componentWillUnmount
+   * @summary ToDo: Describe the method.
+   */
   componentWillUnmount() {
     clearTimeout(this.timeout);
   }
 
-  // i.e 2018-01-27T17:00:00.000-06:00
-  parseDateBeforePatch = (widgetType, value) => {
-    if (DATE_FIELDS.indexOf(widgetType) > -1) {
-      if (value) {
-        return Moment(value).format(DATE_FORMAT);
-      }
-    }
-    return value;
-  };
-
+  /**
+   * @method handlePatch
+   * @summary ToDo: Describe the method.
+   * @param {*} property
+   * @param {*} value
+   */
   handlePatch = (property, value) => {
     const {
       isModal,
@@ -107,7 +120,6 @@ class MasterWidget extends Component {
     let currRowId = rowId;
     let ret = null;
     let isEdit = false;
-    let parseValue = this.parseDateBeforePatch(widgetType, value);
 
     if (rowId === 'NEW') {
       currRowId = relativeDocId;
@@ -129,7 +141,7 @@ class MasterWidget extends Component {
       tabId,
       currRowId,
       property,
-      parseValue,
+      value,
       isModal,
       isAdvanced,
       viewId,
@@ -149,6 +161,12 @@ class MasterWidget extends Component {
   // but is need to handle controlled components if
   // they patch on other event than onchange
   //
+  /**
+   * @method handleKeyDown
+   * @summary ToDo: Describe the method.
+   * @param {*} property
+   * @param {*} val
+   */
   handleChange = (property, val) => {
     const {
       updatePropertyValue,
@@ -159,7 +177,6 @@ class MasterWidget extends Component {
       widgetType,
       entity,
     } = this.props;
-    const dateParse = ['Date', 'DateTime', 'Time'];
     let currRowId = rowId;
 
     this.setState(
@@ -179,12 +196,11 @@ class MasterWidget extends Component {
     );
   };
 
-  setEditedFlag = edited => {
-    this.setState({
-      edited: edited,
-    });
-  };
-
+  /**
+   * @method validatePrecision
+   * @summary ToDo: Describe the method.
+   * @param {*} value
+   */
   validatePrecision = value => {
     const { widgetType, precision } = this.props;
     let precisionProcessed = precision;
@@ -200,12 +216,25 @@ class MasterWidget extends Component {
     }
   };
 
+  /**
+   * @method handleProcess
+   * @summary ToDo: Describe the method.
+   * @param {*} caption
+   * @param {*} buttonProcessId
+   * @param {*} tabId
+   * @param {*} rowId
+   */
   handleProcess = (caption, buttonProcessId, tabId, rowId) => {
     const { openModal } = this.props;
 
     openModal(caption, buttonProcessId, 'process', tabId, rowId, false, false);
   };
 
+  /**
+   * @method handleKeyDown
+   * @summary ToDo: Describe the method.
+   * @param {*} field
+   */
   handleZoomInto = field => {
     const { dataId, windowType, tabId, rowId } = this.props;
 
@@ -224,12 +253,20 @@ class MasterWidget extends Component {
       });
   };
 
+  /**
+   * @method handleBlurWidget
+   * @summary ToDo: Describe the method.
+   */
   handleBlurWidget = () => {
     const { onBlurWidget, fieldName } = this.props;
 
     onBlurWidget && onBlurWidget(fieldName);
   };
 
+  /**
+   * @method render
+   * @summary ToDo: Describe the method.
+   */
   render() {
     const { handleBackdropLock } = this.props;
     const { updated, data } = this.state;
@@ -246,7 +283,6 @@ class MasterWidget extends Component {
         handlePatch={this.handlePatch}
         handleChange={this.handleChange}
         handleProcess={this.handleProcess}
-        setEditedFlag={this.setEditedFlag}
         handleZoomInto={this.handleZoomInto}
         onBlurWidget={this.handleBlurWidget}
       />
@@ -254,9 +290,21 @@ class MasterWidget extends Component {
   }
 }
 
+/**
+ * @typedef {object} Props Component props
+ * @prop {bool} [dataEntry]
+ * @prop {bool} [isOpenDataPicker]
+ * @prop {func} openModal
+ */
 MasterWidget.propTypes = {
+  isModal: PropTypes.bool,
   dataEntry: PropTypes.bool,
+  fieldName: PropTypes.string,
   isOpenDatePicker: PropTypes.bool,
+  onClickOutside: PropTypes.func,
+  onBlurWidget: PropTypes.func,
+  handleBackdropLock: PropTypes.func,
+  updatePropertyValue: PropTypes.func,
   openModal: PropTypes.func.isRequired,
 };
 
