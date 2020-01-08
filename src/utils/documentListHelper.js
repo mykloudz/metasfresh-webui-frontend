@@ -6,6 +6,7 @@ import currentDevice from 'current-device';
 
 import { getItemsByProperty, nullToEmptyStrings } from './index';
 import { getSelection, getSelectionInstant } from '../reducers/windowHandler';
+import { TIME_REGEX_TEST } from '../constants/Constants';
 
 const DLpropTypes = {
   // from parent
@@ -21,10 +22,6 @@ const DLpropTypes = {
   parentSelected: PropTypes.array.isRequired,
   selected: PropTypes.array.isRequired,
   isModal: PropTypes.bool,
-};
-
-const DLcontextTypes = {
-  store: PropTypes.object.isRequired,
 };
 
 const DLmapStateToProps = (state, props) => ({
@@ -114,7 +111,6 @@ const getSortingQuery = (asc, field) => (asc ? '+' : '-') + field;
 
 export {
   DLpropTypes,
-  DLcontextTypes,
   DLmapStateToProps,
   NO_SELECTION,
   NO_VIEW,
@@ -257,12 +253,21 @@ export function parseToDisplay(fieldsByName) {
   return parseDateToReadable(nullToEmptyStrings(fieldsByName));
 }
 
+export function convertTimeStringToMoment(value) {
+  if (value.match(TIME_REGEX_TEST)) {
+    return Moment(value, 'hh:mm');
+  }
+  return value;
+}
+
 // This doesn't set the TZ anymore, as we're handling this globally/in datepicker
 export function parseDateWithCurrentTimezone(value) {
   if (value) {
     if (Moment.isMoment(value)) {
       return value;
     }
+
+    value = convertTimeStringToMoment(value);
     return Moment(value);
   }
   return '';

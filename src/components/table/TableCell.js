@@ -1,8 +1,7 @@
-import Moment from 'moment';
+import Moment from 'moment-timezone';
 import PropTypes from 'prop-types';
 import numeral from 'numeral';
-import React, { PureComponent } from 'react';
-import { connect } from 'react-redux';
+import React, { PureComponent, createRef } from 'react';
 import classnames from 'classnames';
 
 import MasterWidget from '../widget/MasterWidget';
@@ -13,6 +12,8 @@ import {
   DATE_FIELD_TYPES,
   TIME_FIELD_TYPES,
   DATE_FIELD_FORMATS,
+  TIME_REGEX_TEST,
+  TIME_FORMAT,
 } from '../../constants/Constants';
 import WidgetTooltip from '../widget/WidgetTooltip';
 
@@ -26,10 +27,17 @@ class TableCell extends PureComponent {
 
   static getDateFormat = fieldType => DATE_FIELD_FORMATS[fieldType];
 
-  static createDate = (fieldValue, fieldType) =>
-    fieldValue
-      ? Moment(fieldValue).format(TableCell.getDateFormat(fieldType))
-      : '';
+  static createDate = (fieldValue, fieldType) => {
+    if (fieldValue) {
+      return !Moment.isMoment(fieldValue) && fieldValue.match(TIME_REGEX_TEST)
+        ? Moment.utc(Moment.duration(fieldValue).asMilliseconds()).format(
+            TIME_FORMAT
+          )
+        : Moment(fieldValue).format(TableCell.getDateFormat(fieldType));
+    }
+
+    return '';
+  };
 
   static createAmount = (fieldValue, precision, isGerman) => {
     if (fieldValue) {
@@ -126,6 +134,10 @@ class TableCell extends PureComponent {
   constructor(props) {
     super(props);
 
+    this.widget = createRef();
+
+    this.clearWidgetValue = false;
+
     this.state = {
       tooltipToggled: false,
     };
@@ -213,6 +225,10 @@ class TableCell extends PureComponent {
     if (isEditable) {
       handleDoubleClick(e, property, true, widgetData[0]);
     }
+  };
+
+  clearValue = reset => {
+    this.clearWidgetValue = reset == null ? true : false;
   };
 
   render() {
@@ -337,6 +353,7 @@ class TableCell extends PureComponent {
               listenOnKeysTrue,
               onClickOutside,
             }}
+            clearValue={this.clearWidgetValue}
             entity={entityEffective}
             dateFormat={isDateField}
             dataId={mainTable ? null : docId}
@@ -347,9 +364,7 @@ class TableCell extends PureComponent {
             gridAlign={item.gridAlign}
             handleBackdropLock={this.handleBackdropLock}
             onChange={mainTable ? onCellChange : null}
-            ref={c => {
-              this.widget = c && c.getWrappedInstance();
-            }}
+            ref={this.widget}
           />
         ) : (
           <div className={classnames({ 'with-widget': tooltipWidget })}>
@@ -394,9 +409,4 @@ TableCell.propTypes = {
   isGerman: PropTypes.bool,
 };
 
-export default connect(state => ({
-  modalVisible: state.windowHandler.modal.visible,
-  isGerman: state.appHandler.me.language
-    ? state.appHandler.me.language.key.includes('de')
-    : false,
-}))(TableCell);
+export default TableCell;

@@ -4,8 +4,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 import keymap from '../../shortcuts/keymap';
-import { topActionsRequest } from '../../api';
-import { openModal } from '../../actions/WindowActions';
+import {
+  openModal,
+  fetchTopActions,
+  deleteTopActions,
+} from '../../actions/WindowActions';
 import Tooltips from '../tooltips/Tooltips';
 import TableQuickInput from './TableQuickInput';
 import { TableFilterContextShortcuts } from '../keyshortcuts';
@@ -13,36 +16,34 @@ import { TableFilterContextShortcuts } from '../keyshortcuts';
 class ActionButton extends Component {
   static propTypes = {
     action: PropTypes.object.isRequired,
-    dispatch: PropTypes.func.isRequired,
+    openModal: PropTypes.func.isRequired,
     docId: PropTypes.string,
     tabIndex: PropTypes.number,
-    children: PropTypes.element,
+    children: PropTypes.any,
     showTooltip: PropTypes.func,
     hideTooltip: PropTypes.func,
   };
 
   handleClick = () => {
-    const { dispatch, action, docId } = this.props;
+    const { openModal, action, docId } = this.props;
 
     if (action.disabled) {
       return;
     }
 
-    dispatch(
-      openModal(
-        action.caption,
-        action.processId,
-        'process',
-        null,
-        null,
-        false,
-        null,
-        [docId],
-        null,
-        null,
-        null,
-        null
-      )
+    openModal(
+      action.caption,
+      action.processId,
+      'process',
+      null,
+      null,
+      false,
+      null,
+      [docId],
+      null,
+      null,
+      null,
+      null
     );
   };
 
@@ -67,14 +68,16 @@ class ActionButton extends Component {
 
 class TableFilter extends Component {
   static propTypes = {
-    dispatch: PropTypes.func.isRequired,
+    actions: PropTypes.array.isRequired,
     tabIndex: PropTypes.number.isRequired,
     modalVisible: PropTypes.bool.isRequired,
+    fetchTopActions: PropTypes.func.isRequired,
+    deleteTopActions: PropTypes.func.isRequired,
     forceHeight: PropTypes.number,
     tabId: PropTypes.string,
     docType: PropTypes.string,
     docId: PropTypes.string,
-    openModal: PropTypes.func,
+    openModal: PropTypes.func.isRequired,
     toggleFullScreen: PropTypes.func,
     fullScreen: PropTypes.any,
     wrapperHeight: PropTypes.number,
@@ -83,6 +86,7 @@ class TableFilter extends Component {
     handleBatchEntryToggle: PropTypes.func,
     supportQuickInput: PropTypes.bool,
     allowCreateNew: PropTypes.bool,
+    openTableModal: PropTypes.func,
   };
 
   constructor(props) {
@@ -90,7 +94,6 @@ class TableFilter extends Component {
 
     this.state = {
       isTooltipShow: false,
-      actions: [],
     };
   }
 
@@ -98,45 +101,43 @@ class TableFilter extends Component {
     this.getActions();
   }
 
+  componentWillUnmount() {
+    this.props.deleteTopActions();
+  }
+
   getActions = () => {
-    const { tabId, docType, docId } = this.props;
+    const { tabId, docType, docId, fetchTopActions } = this.props;
 
     if (tabId && docType && docId) {
-      topActionsRequest(docType, docId, tabId).then(({ data }) => {
-        this.setState({
-          actions: data.actions,
-        });
-      });
+      fetchTopActions(docType, docId, tabId);
     }
   };
 
   handleClick = action => {
-    const { dispatch, docId } = this.props;
+    const { openModal, docId } = this.props;
 
     if (action.disabled) {
       return;
     }
 
-    dispatch(
-      openModal(
-        action.caption,
-        action.processId,
-        'process',
-        null,
-        null,
-        false,
-        null,
-        [docId],
-        null,
-        null,
-        null,
-        null
-      )
+    openModal(
+      action.caption,
+      action.processId,
+      'process',
+      null,
+      null,
+      false,
+      null,
+      [docId],
+      null,
+      null,
+      null,
+      null
     );
   };
 
   generateShortcuts = () => {
-    let { actions } = this.state;
+    let { actions } = this.props;
     const shortcutActions = [];
 
     if (!actions) {
@@ -170,8 +171,9 @@ class TableFilter extends Component {
 
   render() {
     const {
-      dispatch,
+      openTableModal,
       openModal,
+      actions,
       toggleFullScreen,
       fullScreen,
       docType,
@@ -185,7 +187,7 @@ class TableFilter extends Component {
       modalVisible,
       wrapperHeight,
     } = this.props;
-    const { isTooltipShow, actions } = this.state;
+    const { isTooltipShow } = this.state;
     const tabIndex = fullScreen || modalVisible ? -1 : this.props.tabIndex;
 
     return (
@@ -195,7 +197,7 @@ class TableFilter extends Component {
             {!isBatchEntry && allowCreateNew && (
               <button
                 className="btn btn-meta-outline-secondary btn-distance btn-sm"
-                onClick={openModal}
+                onClick={openTableModal}
                 tabIndex={tabIndex}
               >
                 {counterpart.translate('window.addNew.caption')}
@@ -231,7 +233,7 @@ class TableFilter extends Component {
               ? actions.map(action => (
                   <ActionButton
                     {...{
-                      dispatch,
+                      openModal,
                       tabIndex,
                       action,
                       docId,
@@ -304,6 +306,12 @@ class TableFilter extends Component {
   }
 }
 
-export default connect(state => ({
-  modalVisible: state.windowHandler.modal.visible,
-}))(TableFilter);
+const mapStateToProps = ({ windowHandler }) => ({
+  modalVisible: windowHandler.modal.visible,
+  actions: windowHandler.master.topActions.actions,
+});
+
+export default connect(
+  mapStateToProps,
+  { fetchTopActions, deleteTopActions, openModal }
+)(TableFilter);

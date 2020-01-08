@@ -18,8 +18,14 @@ import {
   CLOSE_RAW_MODAL,
   CLOSE_FILTER_BOX,
   DELETE_ROW,
+  DELETE_QUICK_ACTIONS,
+  DELETE_TOP_ACTIONS,
   DISABLE_SHORTCUT,
   DISABLE_OUTSIDE_CLICK,
+  FETCHED_QUICK_ACTIONS,
+  FETCH_TOP_ACTIONS,
+  FETCH_TOP_ACTIONS_FAILURE,
+  FETCH_TOP_ACTIONS_SUCCESS,
   INIT_DATA_SUCCESS,
   INIT_LAYOUT_SUCCESS,
   NO_CONNECTION,
@@ -53,7 +59,7 @@ import {
   HIDE_SPINNER,
 } from '../constants/ActionTypes';
 
-const initialState = {
+export const initialState = {
   connectionError: false,
   modal: {
     visible: false,
@@ -107,7 +113,13 @@ const initialState = {
     includedTabsInfo: {},
     docId: undefined,
     websocket: null,
+    topActions: {
+      actions: [],
+      fetching: false,
+      error: false,
+    },
   },
+  quickActions: {},
   indicator: 'saved',
   allowShortcut: true,
   allowOutsideClick: true,
@@ -745,6 +757,78 @@ export default function windowHandler(state = initialState, action) {
         ...state,
         spinner: null,
       };
+    // QUICK ACTIONS
+    case FETCHED_QUICK_ACTIONS:
+      return {
+        ...state,
+        quickActions: {
+          ...state.quickActions,
+          [`${action.payload.windowId}${
+            action.payload.id ? `-${action.payload.id}` : ''
+          }`]: action.payload.data,
+        },
+      };
+    case DELETE_QUICK_ACTIONS: {
+      const key = `${action.payload.windowId}${
+        action.payload.id ? `-${action.payload.id}` : ''
+      }`;
+      const newQuickActions = { ...state.quickActions };
+
+      delete newQuickActions[key];
+
+      return {
+        ...state,
+        quickActions: newQuickActions,
+      };
+    }
+    // TOP ACTIONS
+    case FETCH_TOP_ACTIONS:
+      return {
+        ...state,
+        master: {
+          ...state.master,
+          topActions: {
+            ...state.master.topActions,
+            fetching: true,
+          },
+        },
+      };
+    case FETCH_TOP_ACTIONS_SUCCESS:
+      return {
+        ...state,
+        master: {
+          ...state.master,
+          topActions: {
+            ...state.master.topActions,
+            actions: action.payload,
+            fetching: false,
+          },
+        },
+      };
+    case FETCH_TOP_ACTIONS_FAILURE:
+      return {
+        ...state,
+        master: {
+          ...state.master,
+          topActions: {
+            ...state.master.topActions,
+            fetching: false,
+            error: true,
+          },
+        },
+      };
+    case DELETE_TOP_ACTIONS: {
+      return {
+        ...state,
+        master: {
+          ...state.master,
+          topActions: {
+            ...state.master.topActions,
+            actions: [],
+          },
+        },
+      };
+    }
     default:
       return state;
   }

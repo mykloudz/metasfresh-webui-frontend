@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import Moment from 'moment-timezone';
 
 import * as windowActions from '../../actions/WindowActions';
+import { convertTimeStringToMoment } from '../../utils/documentListHelper';
 import RawWidget from './RawWidget';
 
 function isNumberField(widgetType) {
@@ -31,23 +32,16 @@ class MasterWidget extends Component {
     data: '',
   };
 
-  /**
-   * @method componentDidMount
-   * @summary ToDo: Describe the method.
-   */
   componentDidMount() {
-    const { data, widgetData } = this.props;
+    const { data, widgetData, clearValue } = this.props;
 
+    // `clearValue` removes current field value for the widget. This is used when
+    // user focuses on table cell and starts typing
     this.setState({
-      data: data || widgetData[0].value,
+      data: data || (clearValue ? '' : widgetData[0].value),
     });
   }
 
-  /**
-   * @method UNSAFE_componentWillReceiveProps
-   * @summary ToDo: Describe the method.
-   * @param {*} nextProps
-   */
   UNSAFE_componentWillReceiveProps(nextProps) {
     const { widgetData, widgetType } = this.props;
     const { edited, data } = this.state;
@@ -58,7 +52,8 @@ class MasterWidget extends Component {
       JSON.stringify(next) !== data &&
       JSON.stringify(widgetData[0].value) !== JSON.stringify(next)
     ) {
-      if (dateParse.includes(widgetType) && !Moment.isMoment(next)) {
+      if (next && dateParse.includes(widgetType) && !Moment.isMoment(next)) {
+        next = convertTimeStringToMoment(next);
         next = Moment(next);
       }
       this.setState(
@@ -81,10 +76,6 @@ class MasterWidget extends Component {
     }
   }
 
-  /**
-   * @method componentWillUnmount
-   * @summary ToDo: Describe the method.
-   */
   componentWillUnmount() {
     clearTimeout(this.timeout);
   }
@@ -157,7 +148,7 @@ class MasterWidget extends Component {
   };
 
   //
-  // This method may looks like a redundant for this one above,
+  // This method may look like a redundant for this one above,
   // but is need to handle controlled components if
   // they patch on other event than onchange
   //
@@ -268,7 +259,7 @@ class MasterWidget extends Component {
    * @summary ToDo: Describe the method.
    */
   render() {
-    const { handleBackdropLock } = this.props;
+    const { handleBackdropLock, onClickOutside } = this.props;
     const { updated, data } = this.state;
     const handleFocusFn = handleBackdropLock ? handleBackdropLock : () => {};
 
@@ -279,7 +270,7 @@ class MasterWidget extends Component {
         data={data}
         handleFocus={() => handleFocusFn(true)}
         handleBlur={() => handleFocusFn(false)}
-        onClickOutside={this.props.onClickOutside}
+        onClickOutside={onClickOutside}
         handlePatch={this.handlePatch}
         handleChange={this.handleChange}
         handleProcess={this.handleProcess}
@@ -306,6 +297,21 @@ MasterWidget.propTypes = {
   handleBackdropLock: PropTypes.func,
   updatePropertyValue: PropTypes.func,
   openModal: PropTypes.func.isRequired,
+  data: PropTypes.object,
+  widgetData: PropTypes.array,
+  widgetType: PropTypes.string,
+  dataId: PropTypes.string,
+  windowType: PropTypes.string,
+  patch: PropTypes.func,
+  rowId: PropTypes.string,
+  tabId: PropTypes.string,
+  onChange: PropTypes.func,
+  relativeDocId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  isAdvanced: PropTypes.bool,
+  viewId: PropTypes.string,
+  entity: PropTypes.string,
+  precision: PropTypes.bool,
+  clearValue: PropTypes.bool,
 };
 
 export default connect(
@@ -316,5 +322,5 @@ export default connect(
     updatePropertyValue: windowActions.updatePropertyValue,
   },
   null,
-  { withRef: true }
+  { forwardRef: true }
 )(MasterWidget);

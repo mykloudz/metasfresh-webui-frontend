@@ -11,16 +11,28 @@ import {
   ADD_NEW_ROW,
   ADD_ROW_DATA,
   ALLOW_SHORTCUT,
+  ALLOW_OUTSIDE_CLICK,
   CHANGE_INDICATOR_STATE,
   CLEAR_MASTER_DATA,
   CLOSE_MODAL,
   CLOSE_PROCESS_MODAL,
   CLOSE_RAW_MODAL,
+  CLOSE_FILTER_BOX,
+  DELETE_QUICK_ACTIONS,
   DELETE_ROW,
+  DELETE_TOP_ACTIONS,
+  DESELECT_TABLE_ITEMS,
   DISABLE_SHORTCUT,
+  DISABLE_OUTSIDE_CLICK,
+  HIDE_SPINNER,
   INIT_DATA_SUCCESS,
   INIT_LAYOUT_SUCCESS,
+  FETCHED_QUICK_ACTIONS,
+  FETCH_TOP_ACTIONS,
+  FETCH_TOP_ACTIONS_FAILURE,
+  FETCH_TOP_ACTIONS_SUCCESS,
   NO_CONNECTION,
+  OPEN_FILTER_BOX,
   OPEN_MODAL,
   OPEN_RAW_MODAL,
   PATCH_FAILURE,
@@ -28,8 +40,8 @@ import {
   PATCH_SUCCESS,
   REMOVE_TABLE_ITEMS_SELECTION,
   SELECT_TABLE_ITEMS,
-  DESELECT_TABLE_ITEMS,
   SET_LATEST_NEW_DOCUMENT,
+  SHOW_SPINNER,
   SORT_TAB,
   TOGGLE_OVERLAY,
   UNSELECT_TAB,
@@ -44,12 +56,6 @@ import {
   UPDATE_ROW_FIELD_PROPERTY,
   UPDATE_ROW_PROPERTY,
   UPDATE_ROW_STATUS,
-  OPEN_FILTER_BOX,
-  CLOSE_FILTER_BOX,
-  ALLOW_OUTSIDE_CLICK,
-  DISABLE_OUTSIDE_CLICK,
-  SHOW_SPINNER,
-  HIDE_SPINNER,
 } from '../constants/ActionTypes';
 import {
   addNotification,
@@ -59,11 +65,38 @@ import {
   deleteNotification,
 } from './AppActions';
 import { getData, openFile, patchRequest } from './GenericActions';
-import { initLayout } from '../api';
+import { initLayout, topActionsRequest } from '../api';
 import { setListIncludedView } from './ListActions';
 import { getWindowBreadcrumb } from './MenuActions';
 import { toggleFullScreen } from '../utils';
 import { getScope, parseToDisplay } from '../utils/documentListHelper';
+
+export function fetchedQuickActions(windowId, id, data) {
+  return {
+    type: FETCHED_QUICK_ACTIONS,
+    payload: {
+      data,
+      windowId,
+      id,
+    },
+  };
+}
+
+export function deleteQuickActions(windowId, id) {
+  return {
+    type: DELETE_QUICK_ACTIONS,
+    payload: {
+      windowId,
+      id,
+    },
+  };
+}
+
+export function deleteTopActions() {
+  return {
+    type: DELETE_TOP_ACTIONS,
+  };
+}
 
 export function setLatestNewDocument(id) {
   return {
@@ -639,6 +672,27 @@ export function fetchChangeLog(windowId, docId, tabId, rowId) {
         })
       );
     });
+  };
+}
+
+export function fetchTopActions(windowType, docId, tabId) {
+  return dispatch => {
+    dispatch({
+      type: FETCH_TOP_ACTIONS,
+    });
+
+    topActionsRequest(windowType, docId, tabId)
+      .then(response => {
+        dispatch({
+          type: FETCH_TOP_ACTIONS_SUCCESS,
+          payload: response.data.actions,
+        });
+      })
+      .catch(() => {
+        dispatch({
+          type: FETCH_TOP_ACTIONS_FAILURE,
+        });
+      });
   };
 }
 

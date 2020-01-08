@@ -319,8 +319,12 @@ class Table extends Component {
     this.selectRangeProduct(leafsIds);
   };
 
-  changeListen = listenOnKeys => {
-    this.setState({ listenOnKeys: !!listenOnKeys });
+  setListenTrue = () => {
+    this.setState({ listenOnKeys: true });
+  };
+
+  setListenFalse = () => {
+    this.setState({ listenOnKeys: false });
   };
 
   selectProduct = (id, idFocused, idFocusedDown) => {
@@ -785,7 +789,14 @@ class Table extends Component {
 
   openModal = (windowType, tabId, rowId) => {
     const { dispatch } = this.props;
+
     dispatch(openModal('Add new', windowType, 'window', tabId, rowId));
+  };
+
+  openTableModal = () => {
+    const { dispatch, windowId, tabId } = this.props;
+
+    dispatch(openModal('Add new', windowId, 'window', tabId, 'NEW'));
   };
 
   handleAdvancedEdit = (windowId, tabId, selected) => {
@@ -977,6 +988,8 @@ class Table extends Component {
       viewId,
       supportOpenRecord,
       focusOnFieldName,
+      modalVisible,
+      isGerman,
     } = this.props;
 
     const {
@@ -1020,6 +1033,8 @@ class Table extends Component {
           supportOpenRecord,
           item,
           focusOnFieldName,
+          modalVisible,
+          isGerman,
         }}
         dataHash={dataHash}
         key={`${i}-${viewId}`}
@@ -1040,8 +1055,8 @@ class Table extends Component {
         onDoubleClick={this.handleDoubleClick}
         onClick={this.handleClick}
         handleRightClick={this.handleRightClick}
-        changeListenOnTrue={() => this.changeListen(true)}
-        changeListenOnFalse={() => this.changeListen(false)}
+        changeListenOnTrue={this.setListenTrue}
+        changeListenOnFalse={this.setListenFalse}
         newRow={i === rows.length - 1 ? newRow : false}
         isSelected={
           (selected &&
@@ -1055,12 +1070,7 @@ class Table extends Component {
         colspan={item.colspan}
         notSaved={item.saveStatus && !item.saveStatus.saved}
         getSizeClass={getSizeClass}
-        handleRowCollapse={() =>
-          this.handleRowCollapse(
-            item,
-            collapsedParentsRows.indexOf(item[keyProperty]) > -1
-          )
-        }
+        handleRowCollapse={this.handleRowCollapse}
         onItemChange={this.handleItemChange}
         onCopy={handleCopy}
       />
@@ -1204,7 +1214,7 @@ class Table extends Component {
           )}
           {!readonly && (
             <TableFilter
-              openModal={() => this.openModal(windowId, tabId, 'NEW')}
+              openTableModal={this.openTableModal}
               {...{
                 toggleFullScreen,
                 fullScreen,
@@ -1359,15 +1369,20 @@ Table.propTypes = propTypes;
 const mapStateToProps = state => ({
   allowShortcut: state.windowHandler.allowShortcut,
   allowOutsideClick: state.windowHandler.allowOutsideClick,
+  modalVisible: state.windowHandler.modal.visible,
+  isGerman: state.appHandler.me.language
+    ? state.appHandler.me.language.key.includes('de')
+    : false,
 });
 
 const clickOutsideConfig = {
   excludeScrollbar: true,
 };
 
+export { Table };
 export default connect(
   mapStateToProps,
   false,
   false,
-  { withRef: true }
+  { forwardRef: true }
 )(onClickOutside(Table, clickOutsideConfig));
